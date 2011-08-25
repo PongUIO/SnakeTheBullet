@@ -17,4 +17,18 @@ struct ModuleDefinition {
 	Module *module;
 };
 
+#if 0
+	/// @name Signals
+	//@{
+		void startup();
+		void shutdown();
+		
+		void clearData();
+		
+		void input();
+		void process(double delta);
+		void draw();
+	//@}
+#endif
+
 #endif

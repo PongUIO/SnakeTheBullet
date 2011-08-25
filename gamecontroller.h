@@ -1,12 +1,14 @@
 #ifndef GAMECONTROLLER_H
 #define GAMECONTROLLER_H
 #include<QtGui>
+#include <QObject>
 #include<stdlib.h>
 #include<typeinfo>
 
 #include "render.h"
 #include "customlabel.h"
 #include "gamebutton.h"
+#include "timer.h"
 
 #define RATE 20
 
@@ -23,6 +25,7 @@ public:
         QSpacerItem *space;
         QPixmap profiles[1];
 	GameButton *label;
+	Timer *timerObj;
         CustomLabel *label2, *robot;
 	Camera *cam;
 #ifdef WIN32
@@ -43,6 +46,9 @@ public:
 		camTimer = new QTimer(main);
                 drawer->connect(camTimer, SIGNAL(timeout()), drawer, SLOT(moveMouseCheck()));
 		camTimer->start(1./RATE);
+		timerObj = new Timer(main);
+		timerObj->connect(glTimer, SIGNAL(timeout()), timerObj, SLOT(draw()));
+		timerObj->connect(camTimer, SIGNAL(timeout()), timerObj, SLOT(process()));
 
                 iconHolder  = new QVBoxLayout(main);
                 lower = new QHBoxLayout();

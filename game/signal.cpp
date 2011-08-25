@@ -14,7 +14,7 @@ mdSignal::~mdSignal()
 #define CALL \
 	for(ModuleVector::iterator i=mModules.begin(); i!=mModules.end(); ++i) (*i)->
 #define REVERSE_CALL \
-	for(ModVector::reverse_iterator i=modules[type].rbegin(); i!=modules[type].rend();i++) (*i)->
+	for(ModuleVector::reverse_iterator i=mModules.rbegin(); i!=mModules.rend();i++) (*i)->
 
 void mdSignal::startup()
 {
@@ -27,7 +27,7 @@ void mdSignal::startup()
 
 void mdSignal::shutdown()
 {
-	CALL shutdown();
+	REVERSE_CALL shutdown();
 	
 	mModules.clear();
 }

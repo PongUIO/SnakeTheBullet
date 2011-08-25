@@ -3,6 +3,7 @@
 #include <QAbstractButton>
 #include <QIcon>
 #include <QDebug>
+#include <QTimer>
 
 #include "main.h"
 #include "customlabel.h"

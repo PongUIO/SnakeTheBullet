@@ -5,7 +5,7 @@
 #-------------------------------------------------
 
 CONFIG += debug
-QT       += core gui opengl
+QT       += core gui opengl object
 
 TARGET = SnakeTheBullet
 TEMPLATE = app
@@ -14,7 +14,8 @@ TEMPLATE = app
 SOURCES += main.cpp \
 	game/game.cpp \
 	game/module.cpp \
-	game/signal.cpp
+	game/signal.cpp \
+	game/player/player.cpp
 
 HEADERS  += render.h \
     camera.h \
@@ -23,9 +24,11 @@ HEADERS  += render.h \
     gamebutton.h \
     customlabel.h \
     main.h \
+    timer.h \
     game/game.h \
     game/module.h \
-    game/signal.h
+    game/signal.h \
+    game/player/player.h
 
 RESOURCES += \
 	resources.qrc
