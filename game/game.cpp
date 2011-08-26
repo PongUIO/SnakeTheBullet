@@ -5,6 +5,8 @@
 #include "signal.h"
 #include "timer.h"
 
+#include "bullet/bullet.h"
+
 class mdGame modGame;
 
 void mdGame::run()
@@ -12,6 +14,10 @@ void mdGame::run()
 	SDL_Event event;
 	
 	mTimer.reset_timer();
+	
+	// Test code
+	for(int i=0; i<10; i++)
+		modBullet.create( Bullet::Config(double(i)/25.0,double(i)/25.0) );
 	
 	bool shutdown = false;
 	while(!shutdown)

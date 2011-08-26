@@ -39,5 +39,8 @@ add_executable(SnakeTheBullet
 	game/signal.cpp
 	game/timer.cpp
 	
-	game/player/player.cpp)
+	game/player/player.cpp
+	game/bullet/bullet.cpp
+	
+	)
 

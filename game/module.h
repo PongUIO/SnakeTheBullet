@@ -27,7 +27,7 @@ struct ModuleDefinition {
 		
 		void clearData();
 		
-		void input();
+		void input( SDL_Event *event );
 		void process(double delta);
 		void draw();
 	//@}
