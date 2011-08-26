@@ -7,8 +7,8 @@ class mdPlayer : public Module {
 	public:
 		/// @name Signals
 		//@{
-			void startup()  {}
-			void shutdown() {}
+			void startup();
+			void shutdown();
 			
 			void clearData() {}
 			
@@ -18,7 +18,8 @@ class mdPlayer : public Module {
 		//@}
 		
 	private:
-		int x,y;
+		double x,y;
+		bool kup, kdown, kl, kr; 
 };
 
 extern class mdPlayer modPlayer;
