@@ -1,6 +1,8 @@
 #ifndef SIGNAL_H
 #define SIGNAL_H
 
+#include <SDL.h>
+
 #include <vector>
 #include "module.h"
 
@@ -18,7 +20,7 @@ class mdSignal {
 		
 		void clearData();
 		
-		void input();
+		void input( SDL_Event *event );
 		void process(double delta);
 		void draw();
 };

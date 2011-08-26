@@ -1,6 +1,8 @@
 #ifndef MODULE_H
 #define MODULE_H
 
+#include <SDL.h>
+
 class Module {
 	public:
 		virtual void startup()=0;
@@ -8,7 +10,7 @@ class Module {
 		
 		virtual void clearData()=0;
 		
-		virtual void input()=0;
+		virtual void input( SDL_Event *event )=0;
 		virtual void process(double delta)=0;
 		virtual void draw()=0;
 };

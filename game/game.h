@@ -3,7 +3,7 @@
 
 class mdGame {
 	public:
-		void runFrame(double delta);
+		void run();
 };
 
 extern class mdGame modGame;

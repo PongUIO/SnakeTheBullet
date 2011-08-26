@@ -38,9 +38,9 @@ void mdSignal::clearData()
 }
 
 
-void mdSignal::input()
+void mdSignal::input( SDL_Event *event )
 {
-	CALL input();
+	CALL input(event);
 }
 
 void mdSignal::process(double delta)
