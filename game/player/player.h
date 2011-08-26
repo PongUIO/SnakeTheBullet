@@ -12,7 +12,7 @@ class mdPlayer : public Module {
 			
 			void clearData() {}
 			
-			void input() {}
+			void input();
 			void process(double delta);
 			void draw();
 		//@}

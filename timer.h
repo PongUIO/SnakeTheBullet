@@ -4,15 +4,16 @@
 #include <QObject>
 #include "game/signal.h"
 
+#include "input.h"
+
 class Timer : public QObject {
 	Q_OBJECT
 	
 	public slots:
-		void draw() {
-			modSignal.draw();
-		}
-		
 		void process() {
+			mIn.frame_reset();
+			mIn.update();
+			modSignal.input();
 			modSignal.process(0.01);
 		}
 	
