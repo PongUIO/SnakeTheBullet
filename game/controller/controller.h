@@ -23,6 +23,13 @@ class mdController : public Module {
 	private:
 		void nextPhase();
 		
+		enum GenStyle {
+			Circle,
+			Side, 
+			
+			StyleMax
+		};
+		
 		double mCurComplexity;
 		double mNextPhaseTimer;
 };

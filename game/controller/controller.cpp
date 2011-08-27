@@ -1,3 +1,5 @@
+#include <vector>
+
 #include "controller.h"
 #include "../bullet/bullet.h"
 
@@ -10,7 +12,7 @@ mdController::~mdController()
 
 void mdController::startup()
 {
-	mCurComplexity = 200.0;
+	mCurComplexity = 600.0;
 	nextPhase();
 }
 
@@ -27,12 +29,24 @@ void mdController::process(double delta)
 	}
 }
 
+
+struct Border {
+	double xMult, yMult;
+	double xOff, yOff;
+} borderData[] = {
+	{ 0.0, 1.0,-1.0, 0.0 }, // Left
+	{ 0.0,-1.0, 1.0, 0.0 }, // Right
+	{ 1.0, 0.0, 0.0, 1.0 }, // Top
+	{-1.0, 0.0, 0.0,-1.0 }, // Bottom
+};
+
 void mdController::nextPhase()
 {
-	mCurComplexity += 100.0;
+	mCurComplexity += 200.0;
 	
-	int numRules = mdBullet::random(1, sqrt(mCurComplexity / 25.0) );
+	int numRules = mdBullet::random(1, 1+sqrt(mCurComplexity / 25.0) );
 	double maxLength = 0.0;
+	
 	for(int i=0; i<numRules; i++) {
 		double cShare = mCurComplexity / double(numRules);
 		
@@ -47,17 +61,39 @@ void mdController::nextPhase()
 		double inAngle = mdBullet::drandi(2.5, 3.5);
 		double baseAngle = mdBullet::drandi(0.0, 2.0*PI);
 		
-		for(int i=0; i<numBullets; i++) {
-			double angle = baseAngle + double(i)/double(numBullets) * 3.1415*2.0;
-			modBullet.create(
-				Bullet::Config(
-					cos(angle), sin(angle),
-					cos(angle+inAngle)*0.1, sin(angle+inAngle)*0.1,
-					rule
-				)
-			);
+		switch( mdBullet::random(0, StyleMax-1) )
+		{
+			case Circle:
+				for(int i=0; i<numBullets; i++) {
+					double angle = baseAngle + double(i)/double(numBullets) * 3.1415*2.0;
+					modBullet.create(
+						Bullet::Config(
+							cos(angle)*sqrt(2), sin(angle)*sqrt(2),
+							cos(angle+inAngle)*0.1, sin(angle+inAngle)*0.1,
+							rule
+						)
+					);
+				}
+				break;
+			
+			case Side:
+			{
+				for(int i=0; i<numBullets; i++) {
+					Border &b = borderData[i%4];
+					modBullet.create(
+						Bullet::Config(
+							b.xOff + b.xMult* double(i)/double(numBullets),
+							b.yOff + b.yMult* double(i)/double(numBullets),
+							-b.xOff*0.1, -b.yOff*0.1,
+							rule
+						)
+					);
+				}
+			}
+				break;
 		}
+		
 	}
 	
-	mNextPhaseTimer = maxLength + 1.0;
+	mNextPhaseTimer = maxLength*0.93 + 1.0;
 }

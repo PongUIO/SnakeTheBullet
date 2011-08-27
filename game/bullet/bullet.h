@@ -31,6 +31,8 @@ class Bullet {
 		void process(double delta);
 		void draw();
 		
+		bool checkCollision(double tx, double ty, double size);
+		
 		bool isDead() { return toDie; }
 		void kill() { toDie=true; }
 		
@@ -65,6 +67,7 @@ class mdBullet : public Module, public Factory<Bullet> {
 		~mdBullet();
 		
 		void create(const Bullet::Config &config);
+		bool checkCollision(double x, double y, double size);
 		
 		/// @name Signals
 		//@{
@@ -84,6 +87,7 @@ class mdBullet : public Module, public Factory<Bullet> {
 			static double drandi(double min, double max);
 		//@}
 		
+		bool hasCol;
 	private:
 		
 };

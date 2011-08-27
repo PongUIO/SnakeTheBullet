@@ -123,101 +123,16 @@ void Bullet::setRule(int r)
 	
 	State *state = rule->getState(activeRuleState);
 	state->activate(this);
-	
-	/*switch(state->switchType)
-	{
-		case BulletRule::Fan:
-			fparam[1] = state.iparam[0] / state.length;
-			fparam[0] = fparam[1];
-			break;
-		
-		default:
-			break;
-	}*/
 }
 
-/*void Bullet::seekPoint(BulletRule::State& state, double delta)
+bool Bullet::checkCollision(double tx, double ty, double size)
 {
-	double len = sqrt(vx*vx+vy*vy);
-	double angle = atan2(vy,vx);
-	
-	double targetAngle = atan2(state.fparam[1]-y, state.fparam[1]-x);
-	
-	if(targetAngle < angle)
-		angle -= 0.5*delta;
-	else
-		angle += 0.5*delta;
-	
-	if(len < state.fparam[2])
-		len += 0.1*delta;
-	else
-		len -= 0.1*delta;
-	
-	vx = cos(angle)*len;
-	vy = sin(angle)*len;
+	double dist = sqrt( (tx-x)*(tx-x) + (ty-y)*(ty-y) );
+	if(dist < size)
+		modBullet.hasCol = true;
 }
 
-void Bullet::fan(BulletRule::State& state, double delta)
-{
-	fparam[0] -= delta;
-	if(fparam[0] <= 0.0) {
-		Bullet::Config cfg = Bullet::Config(x,y, 0.0,0.0, rule, activeRuleState+1);
-		
-		cfg.vx = cos(initialAngle+ state.fparam[0]) * state.fparam[1];
-		cfg.vy = sin(initialAngle+ state.fparam[0]) * state.fparam[1];
-		
-		modBullet.create(cfg);
-		
-		fparam[0] = fparam[1];
-	}
-}
 
-void Bullet::circleSpawn(BulletRule::State& state)
-{
-	Bullet::Config cfg = Bullet::Config(x,y, 0.0,0.0, rule, activeRuleState+1);
-	
-	for(int i=0; i<state.iparam[0]; i++) {
-		double angle = double(i) / double(state.iparam[0]) * 2.0*PI;
-		
-		cfg.vx = cos(angle)*state.fparam[0];
-		cfg.vy = sin(angle)*state.fparam[0];
-		
-		modBullet.create( cfg );
-	}
-	
-	toDie=true;
-}
-
-void Bullet::changeSpeed(BulletRule::State& state)
-{
-	double dir = atan2(y,x) + mdBullet::drandi(-0.5, 0.5);
-	
-	vx = cos(dir) * state.fparam[0];
-	vy = sin(dir) * state.fparam[0];
-	
-	nextRule();
-}
-
-void Bullet::moveRandom(BulletRule::State& state)
-{
-	double dir = mdBullet::drandi(0, 2.0*PI);
-	
-	vx = state.fparam[0]*cos(dir);
-	vy = state.fparam[0]*sin(dir);
-	
-	nextRule();
-}
-
-void Bullet::rotateAngle(BulletRule::State& state)
-{
-	double angle = atan2(vy,vx);
-	angle += mdBullet::drandi(-state.fparam[0], state.fparam[0]);
-	
-	vx = state.fparam[1]*cos(angle);
-	vy = state.fparam[1]*sin(angle);
-	
-	nextRule();
-}*/
 
 // mdBullet
 //
@@ -236,6 +151,13 @@ void mdBullet::startup()
 void mdBullet::shutdown()
 {
 	clearData();
+}
+
+bool mdBullet::checkCollision(double tx, double ty, double size)
+{
+	hasCol=false;
+	factoryCall( boost::bind(&Bullet::checkCollision, _1, tx, ty, size) );
+	return hasCol;
 }
 
 

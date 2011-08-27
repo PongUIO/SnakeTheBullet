@@ -5,14 +5,14 @@ void SeekPoint::generate(double cplx)
 {
 	mTargetX = mdBullet::drandi(-0.9, 0.9);
 	mTargetY = mdBullet::drandi(-0.9, 0.9);
-	mSpeed = mdBullet::drandi(0.02*sqrt(cplx), 0.08*sqrt(cplx));
+	mSpeed = mdBullet::drandi(0.03*(1.0+sqrt(cplx)), 0.06*(1.0+sqrt(cplx)));
 	
-	duration = mdBullet::drandi(2.5, 6.0);
+	duration = mdBullet::drandi(3.5, 5.0);
 }
 
 double SeekPoint::computeComplexity(double prev)
 {
-    return prev + 0.125 + 0.5*mSpeed;
+    return prev + 0.1*prev + 2.0 + 0.5*mSpeed;
 }
 
 void SeekPoint::finishCall(Bullet* b)
@@ -25,12 +25,12 @@ void SeekPoint::process(Bullet* b, double delta)
 	double len = sqrt(b->vx*b->vx+b->vy*b->vy);
 	double angle = atan2(b->vy,b->vx);
 	
-	double targetAngle = atan2(mTargetY-b->y, mTargetX-b->x);
+	bool isLeft = (b->vx*(mTargetY-b->y) - b->vy*(mTargetX-b->x)) > 0;
 	
-	if(targetAngle < angle)
-		angle -= 0.65*delta;
+	if(isLeft)
+		angle += 5.0*mSpeed*delta;
 	else
-		angle += 0.65*delta;
+		angle -= 5.0*mSpeed*delta;
 	
 	if(len < mSpeed)
 		len += 0.15*delta;

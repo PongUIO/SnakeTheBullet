@@ -11,8 +11,9 @@ void init_GL() {
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	
-	double ratio = double(screen->w) / double(screen->h);
+	double s = 1.0;
 	glOrtho(-1, 1, -1, 1, 1,1);
+	glScalef(s,s,s);
 }
 
 void startup() {

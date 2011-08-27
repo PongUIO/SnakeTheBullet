@@ -3,14 +3,14 @@
 
 void MoveRandom::generate(double cplx)
 {
-    mBaseSpeed = mdBullet::drandi(0.015*sqrt(cplx), 0.05*sqrt(cplx));
+    mBaseSpeed = mdBullet::drandi(0.015*(1.0+sqrt(cplx)), 0.05*(1.0+sqrt(cplx)));
 	
-	duration = mdBullet::drandi(2.5, 8.0);
+	duration = mdBullet::drandi(3.5, 7.0);
 }
 
 double MoveRandom::computeComplexity(double prev)
 {
-    return (1.0+prev) * 2.0 * (1.0 + mBaseSpeed*0.5);
+    return (1.0+prev) * 4.0 * (1.0 + mBaseSpeed*0.5);
 }
 
 void MoveRandom::finishCall(Bullet* b)

@@ -3,7 +3,7 @@
 
 void IdleState::generate(double cplx)
 {
-    duration = mdBullet::drandi(1.5, 3.5*(1.0+sqrt(cplx)));
+    duration = mdBullet::drandi(3.5, 7.5);
 }
 
 

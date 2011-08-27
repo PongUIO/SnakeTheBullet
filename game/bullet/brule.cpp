@@ -12,8 +12,8 @@
 
 #include <GL/glext.h>
 
-#define ATTEMPTS 8
-#define STATE_ATTEMPTS 4
+#define ATTEMPTS 16
+#define STATE_ATTEMPTS 8
 
 BulletRule::~BulletRule()
 {
@@ -53,6 +53,7 @@ BulletRule* BulletRule::designRule(double complexity)
 void BulletRule::generate(double complexity)
 {
 	int numStates = calcNumRules(complexity);
+	printf("%d\n", numStates);
 	mComplexity = 0.0;
 	mLength = 0.0;
 	
@@ -127,7 +128,7 @@ void State::setup(double cplx)
 		
 		for(int i=0; i<numFragments; i++) {
 			double size = sqrt(realCplx) / sqrt(double(i+1));
-			size *= 0.015;
+			size = 0.015*sqrt(size);
 			
 			RenderFragment frag;
 			frag.moveOffset = i==0 ? 0.0 : mdBullet::drandi(0.0, size*0.5 * double(i)/double(numFragments));
@@ -205,109 +206,8 @@ void State::setup(double cplx)
 	}
 }
 
-/*void BulletRule::State::generate(double complexity)
-{
-	length = 0.0;
-	switch(switchType)
-	{
-		case CircleSpawn:
-			iparam[0] = mdBullet::random(3,3+sqrt(complexity) );
-			fparam[0] = mdBullet::drandi(0.015*sqrt(complexity), 0.05*sqrt(complexity));
-			break;
-			
-		case RotateAngle:
-			fparam[0] = mdBullet::drandi(0, PI);
-			fparam[1] = mdBullet::drandi(0.015*sqrt(complexity), 0.05*sqrt(complexity));
-			break;
-			
-		case MoveRandom:
-			fparam[0] = mdBullet::drandi(0.015*sqrt(complexity), 0.05*sqrt(complexity));
-			break;
-		
-		case ChangeSpeed:
-			fparam[0] = mdBullet::drandi(0.015*sqrt(complexity), 0.05*sqrt(complexity));
-			break;
-		
-		case SeekPoint:
-			fparam[0] = mdBullet::drandi(-0.9,0.9);
-			fparam[1] = mdBullet::drandi(-0.9, 0.9);
-			fparam[2] = mdBullet::drandi(0.025*sqrt(complexity), 0.1*sqrt(complexity));
-			length = 2.0;
-			break;
-		
-		case Fan:
-			fparam[0] = mdBullet::drandi(0.0, 2.0*PI);
-			fparam[1] = mdBullet::drandi(0.015*sqrt(complexity), 0.05*sqrt(complexity));
-			iparam[0] = mdBullet::random(1, 1+sqrt(complexity));
-			break;
-		
-		default:
-			break;
-	}
-	
-	double realComplexity = computeComplexity();
-	
-	if(complexity <= 0.0) {
-		length = mdBullet::drandi(1.0, 2.0);
-	} else {
-		length += mdBullet::drandi(3.0*sqrt(realComplexity), (15.0-complexity*2.0)*sqrt(realComplexity));
-		if(length < 3.0)
-			length = 3.0;
-	}
-	
-	realComplexity = computeComplexity();
-	
-	
-}*/
-
 /**
  * Calculates the ideal number of rules for a given complexity.
  */
 int BulletRule::calcNumRules(double complexity)
-{	return mdBullet::random(1, 1+log(1+pow(complexity,1.5)) ); }
-
-/**
- * Computes the complexity of a given input state.
- */
-/*double BulletRule::State::computeComplexity(double prevComplexity)
-{
-	double tmp = 0.0;
-	
-	switch(switchType)
-	{
-		case CircleSpawn:
-			tmp = (1.0+prevComplexity) * 1.5 * (1.0 + iparam[0]*0.25*(fparam[0]/2.0));
-			break;
-			
-		case RotateAngle:
-			tmp = prevComplexity+0.125;
-			break;
-			
-		case MoveRandom:
- 			tmp = (1.0+prevComplexity) * 2.0 * (1.0 + fparam[0]/2.0);
-			break;
-		
-		case ChangeSpeed:
-			tmp = prevComplexity + 0.05 + 0.5*fparam[0];
-			break;
-		
-		case SeekPoint:
-			tmp = prevComplexity + 0.125 + 0.5*fparam[2];
-			break;
-		
-		case Fan:
-			tmp = (1.0+prevComplexity) * (iparam[0]);
-			break;
-		
-		case IdleRule:
-			tmp = prevComplexity;
-			break;
-		
-		default:
-			tmp = 10;
-			break;
-	}
-	
-	return tmp;
-}
-*/
+{	return mdBullet::random(1, 2+log(1+pow(complexity,1.0)) ); }
