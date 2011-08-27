@@ -15,10 +15,6 @@ void mdGame::run()
 	
 	mTimer.reset_timer();
 	
-	// Test code
-	for(int i=0; i<10; i++)
-		modBullet.create( Bullet::Config(double(i)/25.0,double(i)/25.0) );
-	
 	bool shutdown = false;
 	while(!shutdown)
 	{

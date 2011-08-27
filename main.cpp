@@ -12,13 +12,16 @@ void init_GL() {
 	glLoadIdentity();
 	
 	double ratio = double(screen->w) / double(screen->h);
-	glOrtho(-ratio, ratio, -1, 1, 1,1);
+	glOrtho(-1, 1, -1, 1, 1,1);
 }
 
 void startup() {
 	SDL_Init( SDL_INIT_EVERYTHING );
 	
-	screen = SDL_SetVideoMode(0,0,0, SDL_OPENGL);
+	const SDL_VideoInfo *info = SDL_GetVideoInfo();
+	int size = info->current_h<info->current_w ? info->current_h : info->current_w;
+	size = double(size)*0.85;
+	screen = SDL_SetVideoMode(size,size,0, SDL_OPENGL);
 	init_GL();
 	
 	mTimer.setup();
@@ -28,6 +31,8 @@ void startup() {
 
 void shutdown() {
 	modSignal.shutdown();
+	
+	SDL_Quit();
 }
 
 int main(int argc, char *argv[]) {

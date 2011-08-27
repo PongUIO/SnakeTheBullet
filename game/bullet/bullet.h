@@ -1,16 +1,24 @@
 #ifndef BULLET_H
 #define BULLET_H
 
+#include <boost/random.hpp>
+
 #include "../factory.h"
 #include "../module.h"
+
+#include "brule.h"
 
 class Bullet {
 	public:
 		struct Config {
-			Config(double x,double y) : x(x), y(y)
+			Config(double x,double y, double vx, double vy, BulletRule *rule, int activeState=0) :
+				x(x), y(y), vx(vx), vy(vy), rule(rule), activeState(activeState)
 				{}
 			
 			double x,y;
+			double vx, vy;
+			BulletRule *rule;
+			int activeState;
 		};
 		
 		Bullet(const Config &config);
@@ -25,7 +33,16 @@ class Bullet {
 		double x,y;
 		double vx, vy;
 		
+		BulletRule *rule;
+		int activeRuleState;
+		double ruleTimer;
+		
+		double baseAngle;
+		
 		bool toDie;
+		
+		// State processing
+		void circleSpawn(BulletRule::State &state);
 };
 
 class mdBullet : public Module, public Factory<Bullet> {
@@ -40,11 +57,17 @@ class mdBullet : public Module, public Factory<Bullet> {
 			void startup();
 			void shutdown();
 			
-			void clearData() {}
+			void clearData() { Factory::killAll(); }
 			
 			void input( SDL_Event *event ) {}
 			void process(double delta);
 			void draw();
+		//@}
+		
+		/// @name Rng
+		//@{
+			static int random(int min, int max);
+			static double drandi(double min, double max);
 		//@}
 		
 	private:
