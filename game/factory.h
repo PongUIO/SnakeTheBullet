@@ -32,7 +32,7 @@
 template<class T>
 class Factory {
 	protected:
-		typedef std::stack<uint32_t> IdStack;
+		typedef std::vector<uint32_t> IdStack;
 		
 	public:
 		typedef std::vector<T*> ObjVec;
@@ -72,6 +72,8 @@ class Factory {
 			}
 		}
 		
+		uint32_t getActive() { return mData.size()-mFreeId.size(); }
+		
 	protected:
 		void setObject(T *obj, uint32_t id) {
 			if(id >= mData.size())
@@ -93,14 +95,14 @@ class Factory {
 				mData.push_back(NULL);
 				return mIdCounter++;
 			} else {
-				uint32_t id = mFreeId.top();
-				mFreeId.pop();
+				uint32_t id = mFreeId.back();
+				mFreeId.pop_back();
 				return id;
 			}
 		}
 		
 		void freeId(uint32_t id) {
-			mFreeId.push(id);
+			mFreeId.push_back(id);
 		}
 		
 		void killAll() {

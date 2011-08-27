@@ -41,6 +41,7 @@ add_executable(SnakeTheBullet
 	
 	game/player/player.cpp
 	game/bullet/bullet.cpp
-	
+	game/bullet/brule.cpp
+	game/controller/controller.cpp
 	)
 
