@@ -22,15 +22,23 @@ void mdPlayer::input( SDL_Event *event )
 		case SDLK_UP: kup=upflag; break; 
 		case SDLK_DOWN: kdown=upflag; break; 
 		case SDLK_LEFT: kl=upflag; break; 
-		case SDLK_RIGHT: kr=upflag; break; }
+		case SDLK_RIGHT: kr=upflag; break;
+		case SDLK_LSHIFT: ksh=upflag; break;
+		case SDLK_LCTRL: kct=upflag; break;
+		case SDLK_LALT: kalt=upflag; break;
+	}
 }
 
 void mdPlayer::process(double delta)
 {
-	if(kup) y += delta;
-	if(kdown) y -= delta;
-	if(kl) x -= delta;
-	if(kr) x += delta;
+	double km = 1;
+	if(kct) km = 0.5;
+	if(ksh) km = 1.5;
+	if(kalt) km = 2;
+	if(kup) y += delta*km;
+	if(kdown) y -= delta*km;
+	if(kl) x -= delta*km;
+	if(kr) x += delta*km;
 }
 
 void mdPlayer::draw()

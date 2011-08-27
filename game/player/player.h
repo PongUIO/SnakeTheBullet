@@ -20,6 +20,7 @@ class mdPlayer : public Module {
 	private:
 		double x,y;
 		bool kup, kdown, kl, kr; 
+		bool kct, ksh, kalt;
 };
 
 extern class mdPlayer modPlayer;
