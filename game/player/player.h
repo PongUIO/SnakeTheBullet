@@ -19,6 +19,7 @@ class mdPlayer : public Module {
 		
 	private:
 		double x,y;
+		double h,w;
 		bool kup, kdown, kl, kr; 
 		bool kct, ksh, kalt;
 };

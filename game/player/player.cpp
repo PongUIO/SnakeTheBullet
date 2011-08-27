@@ -12,6 +12,7 @@ void mdPlayer::shutdown()
 void mdPlayer::startup()
 {
 	x = y = 0;
+	h = w = 0.2;
 }
 
 
@@ -35,10 +36,10 @@ void mdPlayer::process(double delta)
 	if(kct) km = 0.5;
 	if(ksh) km = 1.5;
 	if(kalt) km = 2;
-	if(kup) y += delta*km;
-	if(kdown) y -= delta*km;
-	if(kl) x -= delta*km;
-	if(kr) x += delta*km;
+	if(kup && y+h <= 0.98) y += delta*km;
+	if(kdown && y>= -0.99) y -= delta*km;
+	if(kl && x>=-0.98) x -= delta*km;
+	if(kr && x+w <=0.98) x += delta*km;
 }
 
 void mdPlayer::draw()
@@ -47,8 +48,8 @@ void mdPlayer::draw()
 	glBegin(GL_QUADS);
 		glColor3f(1.0,1.0,1.0);
 		glVertex2f( 0, 0 );
-		glVertex2f( 0.5, 0 );
-		glVertex2f( 0.5, 0.5 );
-		glVertex2f( 0, 0.5 );
+		glVertex2f( h, 0 );
+		glVertex2f( h, w );
+		glVertex2f( 0, w );
 	glEnd();
 }
