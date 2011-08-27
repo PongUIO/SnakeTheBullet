@@ -33,16 +33,29 @@ class Bullet {
 		double x,y;
 		double vx, vy;
 		
+		double fparam[4];
+		double iparam[4];
+		
 		BulletRule *rule;
 		int activeRuleState;
 		double ruleTimer;
 		
-		double baseAngle;
+		double renderAngle;
+		double initialAngle;
 		
 		bool toDie;
 		
+		void setRule(int rule);
+		void nextRule() { setRule(activeRuleState+1); }
+		
 		// State processing
 		void circleSpawn(BulletRule::State &state);
+		void rotateAngle(BulletRule::State &state);
+		void moveRandom(BulletRule::State &state);
+		void changeSpeed(BulletRule::State &state);
+		
+		void seekPoint(BulletRule::State &state, double delta);
+		void fan(BulletRule::State &state, double delta);
 };
 
 class mdBullet : public Module, public Factory<Bullet> {

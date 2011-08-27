@@ -10,7 +10,7 @@ mdController::~mdController()
 
 void mdController::startup()
 {
-	mCurComplexity = 40.0;
+	mCurComplexity = 200.0;
 	nextPhase();
 }
 
@@ -22,7 +22,6 @@ void mdController::shutdown()
 void mdController::process(double delta)
 {
 	mNextPhaseTimer -= delta;
-	printf("%g\n", mNextPhaseTimer);
 	if(mNextPhaseTimer <= 0.0) {
 		nextPhase();
 	}
@@ -30,7 +29,7 @@ void mdController::process(double delta)
 
 void mdController::nextPhase()
 {
-	mCurComplexity += 10.0;
+	mCurComplexity += 50.0;
 	
 	BulletRule *rule = BulletRule::designRule(
 		mCurComplexity / sqrt(mCurComplexity));
@@ -38,7 +37,7 @@ void mdController::nextPhase()
 	mNextPhaseTimer = rule->getLength() + 1.0;
 	
 	int numBullets = mCurComplexity / rule->getComplexity();
-	double inAngle = mdBullet::drandi(1.0, 3.0);
+	double inAngle = mdBullet::drandi(2.5, 3.5);
 	for(int i=0; i<numBullets; i++) {
 		double angle = double(i)/double(numBullets) * 3.1415*2.0;
 		modBullet.create(

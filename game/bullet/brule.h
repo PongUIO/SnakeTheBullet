@@ -29,10 +29,12 @@ class BulletRule {
 		*/
 		enum SwitchType {
 			IdleRule=0,
-			CircleSpawn, // Spawns a circle of bullets (iparam[0]=numBullets, fparam[0]=baseSpeed)
-			RotateAngle, // Rotates the active velocity of the bullet (fparam[0]=angle)
-			MoveRandom,  // Moves in a random direction
-			ChangeSpeed, // Alters the speed of the rule
+			CircleSpawn,// Spawns a circle of bullets (iparam[0]=numBullets, fparam[0]=baseSpeed)
+			RotateAngle,// Rotates the active velocity of the bullet (fp0=angle)
+			MoveRandom,	// Moves in a random direction (fp0=speed)
+			ChangeSpeed,// Alters the speed of the rule (fp0=speed)
+			SeekPoint,	// Seeks a specific point (fp0=target x, fp1=target y, fp2=speed)
+			Fan,		// Creates a fan of bullets over time (fp0=target angle)
 			
 			MaxSwitch
 		};
@@ -73,7 +75,7 @@ class BulletRule {
 			GLuint bufferGl[2];
 			int numPts;
 			
-			double computeComplexity();
+			double computeComplexity(double prevComplexity = 0.0);
 			
 			void generate(double complexity);
 		};

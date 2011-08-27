@@ -54,10 +54,10 @@ Bullet::Bullet(const Bullet::Config& config) :
 	if(rule)
 		rule->ref();
 	
-	ruleTimer = 0.0;
-	activeRuleState = config.activeState;
+	setRule(config.activeState);
 	
-	baseAngle = mdBullet::drandi(0.0, 2.0*PI);
+	renderAngle = mdBullet::drandi(0.0, 2.0*PI);
+	initialAngle = atan2(vy,vx);
 }
 
 Bullet::~Bullet()
@@ -72,19 +72,27 @@ void Bullet::process(double delta)
 	
 	BulletRule::State &state = rule->getState(activeRuleState);
 	
+	switch(state.switchType)
+	{
+		case BulletRule::SeekPoint:		seekPoint(state,delta); break;
+		case BulletRule::Fan:			fan(state,delta);		break;
+		
+		default:
+			break;
+	}
+	
 	if(ruleTimer >= state.length) {
 		switch(state.switchType)
 		{
-			case BulletRule::CircleSpawn:
-				circleSpawn(state);
-				break;
-			
-			case BulletRule::IdleRule:
-				toDie=true;
-				break;
+			case BulletRule::Fan:
+			case BulletRule::IdleRule:		toDie=true; 		break;
+			case BulletRule::CircleSpawn:	circleSpawn(state); break;
+			case BulletRule::RotateAngle:	rotateAngle(state);	break;
+			case BulletRule::MoveRandom:	moveRandom(state);	break;
+			case BulletRule::ChangeSpeed:	changeSpeed(state);	break;
 			
 			default:
-				toDie=true;
+				nextRule();
 				break;
 		}
 	}
@@ -97,7 +105,7 @@ void Bullet::draw()
 {
 	glLoadIdentity();
 	glTranslatef(x,y,0);
-	glRotatef(baseAngle/PI*180.0, 0,0,1.0);
+	glRotatef(renderAngle/PI*180.0, 0,0,1.0);
 	BulletRule::State &curState = rule->getState(activeRuleState);
 	
 	glBindBuffer(GL_ARRAY_BUFFER, curState.bufferGl[0]);
@@ -124,6 +132,61 @@ void Bullet::draw()
 	glDisableClientState(GL_COLOR_ARRAY);
 }
 
+void Bullet::setRule(int r)
+{
+	activeRuleState = r;
+	ruleTimer = 0.0;
+	
+	BulletRule::State &state = rule->getState(activeRuleState);
+	
+	switch(state.switchType)
+	{
+		case BulletRule::Fan:
+			fparam[1] = state.iparam[0] / state.length;
+			fparam[0] = fparam[1];
+			break;
+		
+		default:
+			break;
+	}
+}
+
+void Bullet::seekPoint(BulletRule::State& state, double delta)
+{
+	double len = sqrt(vx*vx+vy*vy);
+	double angle = atan2(vy,vx);
+	
+	double targetAngle = atan2(state.fparam[1]-y, state.fparam[1]-x);
+	
+	if(targetAngle < angle)
+		angle -= 0.5*delta;
+	else
+		angle += 0.5*delta;
+	
+	if(len < state.fparam[2])
+		len += 0.1*delta;
+	else
+		len -= 0.1*delta;
+	
+	vx = cos(angle)*len;
+	vy = sin(angle)*len;
+}
+
+void Bullet::fan(BulletRule::State& state, double delta)
+{
+	fparam[0] -= delta;
+	if(fparam[0] <= 0.0) {
+		Bullet::Config cfg = Bullet::Config(x,y, 0.0,0.0, rule, activeRuleState+1);
+		
+		cfg.vx = cos(initialAngle+ state.fparam[0]) * state.fparam[1];
+		cfg.vy = sin(initialAngle+ state.fparam[0]) * state.fparam[1];
+		
+		modBullet.create(cfg);
+		
+		fparam[0] = fparam[1];
+	}
+}
+
 void Bullet::circleSpawn(BulletRule::State& state)
 {
 	Bullet::Config cfg = Bullet::Config(x,y, 0.0,0.0, rule, activeRuleState+1);
@@ -140,6 +203,36 @@ void Bullet::circleSpawn(BulletRule::State& state)
 	toDie=true;
 }
 
+void Bullet::changeSpeed(BulletRule::State& state)
+{
+	double dir = atan2(y,x) + mdBullet::drandi(-0.5, 0.5);
+	
+	vx = cos(dir) * state.fparam[0];
+	vy = sin(dir) * state.fparam[0];
+	
+	nextRule();
+}
+
+void Bullet::moveRandom(BulletRule::State& state)
+{
+	double dir = mdBullet::drandi(0, 2.0*PI);
+	
+	vx = state.fparam[0]*cos(dir);
+	vy = state.fparam[0]*sin(dir);
+	
+	nextRule();
+}
+
+void Bullet::rotateAngle(BulletRule::State& state)
+{
+	double angle = atan2(vy,vx);
+	angle += mdBullet::drandi(-state.fparam[0], state.fparam[0]);
+	
+	vx = state.fparam[1]*cos(angle);
+	vy = state.fparam[1]*sin(angle);
+	
+	nextRule();
+}
 
 // mdBullet
 //
@@ -171,7 +264,6 @@ void mdBullet::create(const Bullet::Config& config)
 void mdBullet::process(double delta)
 {
 	factoryCall( boost::bind(&Bullet::process, _1, delta) );
-	printf("%d\n", getActive());
 }
 
 void mdBullet::draw()
