@@ -4,7 +4,7 @@
 #include <vector>
 #include <GL/gl.h>
 
-#define MAX_PARAM 4
+#include "bstate.h"
 
 class BulletRule {
 	public:
@@ -28,13 +28,11 @@ class BulletRule {
 		* a switchtype is activated.
 		*/
 		enum SwitchType {
-			IdleRule=0,
-			CircleSpawn,// Spawns a circle of bullets (iparam[0]=numBullets, fparam[0]=baseSpeed)
-			RotateAngle,// Rotates the active velocity of the bullet (fp0=angle)
-			MoveRandom,	// Moves in a random direction (fp0=speed)
-			ChangeSpeed,// Alters the speed of the rule (fp0=speed)
-			SeekPoint,	// Seeks a specific point (fp0=target x, fp1=target y, fp2=speed)
-			Fan,		// Creates a fan of bullets over time (fp0=target angle)
+			SwIdleRule=0,
+			SwCircleSpawn,// Spawns a circle of bullets (iparam[0]=numBullets, fparam[0]=baseSpeed)
+			SwMoveRandom,	// Moves in a random direction (fp0=speed)
+			SwSeekPoint,	// Seeks a specific point (fp0=target x, fp1=target y, fp2=speed)
+			SwFan,		// Creates a fan of bullets over time (fp0=target angle)
 			
 			MaxSwitch
 		};
@@ -59,38 +57,17 @@ class BulletRule {
 			
 			int numPoints;
 		};
-		
-		struct State {
-			SwitchType switchType;
-			
-			/// Switch parameters
-			int iparam[MAX_PARAM];
-			double fparam[MAX_PARAM];
-			
-			double length;
-			
-			typedef std::vector<RenderFragment> FragmentVec;
-			FragmentVec mFigures;
-			
-			GLuint bufferGl[2];
-			int numPts;
-			
-			double computeComplexity(double prevComplexity = 0.0);
-			
-			void generate(double complexity);
-		};
-		
-		typedef std::vector<State> StateVec;
+		typedef std::vector<State*> StateVec;
 		StateVec mStateVec;
 		
-		State &getState(int id) { return mStateVec[id]; }
+		State *getState(int id) { return mStateVec[id]; }
 		int numStates() { return mStateVec.size(); }
 		
 	private:
 		void generate(double complexity);
 		
 		static int calcNumRules(double complexity);
-		static State constructState(double idealComplexity);
+		static State *constructState(double idealComplexity);
 		
 		int mReferences; ///< Number of bullets that reference this rule
 		double mComplexity; ///< Real calculated complexity

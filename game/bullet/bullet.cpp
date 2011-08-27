@@ -1,9 +1,9 @@
 #define GL_GLEXT_PROTOTYPES
 #include <GL/gl.h>
 #include <stdio.h>
+#include <time.h>
 
 #include "bullet.h"
-#define PI 3.1415927
 
 #define BUFFER_OFFSET(i) ((char*)NULL + (i))
 
@@ -58,6 +58,8 @@ Bullet::Bullet(const Bullet::Config& config) :
 	
 	renderAngle = mdBullet::drandi(0.0, 2.0*PI);
 	initialAngle = atan2(vy,vx);
+	
+	scale = 1.0;
 }
 
 Bullet::~Bullet()
@@ -68,33 +70,13 @@ Bullet::~Bullet()
 
 void Bullet::process(double delta)
 {
+	State *state = rule->getState(activeRuleState);
+	
+	state->process(this, delta);
+	
 	ruleTimer += delta;
-	
-	BulletRule::State &state = rule->getState(activeRuleState);
-	
-	switch(state.switchType)
-	{
-		case BulletRule::SeekPoint:		seekPoint(state,delta); break;
-		case BulletRule::Fan:			fan(state,delta);		break;
-		
-		default:
-			break;
-	}
-	
-	if(ruleTimer >= state.length) {
-		switch(state.switchType)
-		{
-			case BulletRule::Fan:
-			case BulletRule::IdleRule:		toDie=true; 		break;
-			case BulletRule::CircleSpawn:	circleSpawn(state); break;
-			case BulletRule::RotateAngle:	rotateAngle(state);	break;
-			case BulletRule::MoveRandom:	moveRandom(state);	break;
-			case BulletRule::ChangeSpeed:	changeSpeed(state);	break;
-			
-			default:
-				nextRule();
-				break;
-		}
+	if(ruleTimer >= state->duration) {
+		state->finishCall(this);
 	}
 	
 	x += vx*delta;
@@ -105,11 +87,12 @@ void Bullet::draw()
 {
 	glLoadIdentity();
 	glTranslatef(x,y,0);
+	glScalef(scale,scale,1.0);
 	glRotatef(renderAngle/PI*180.0, 0,0,1.0);
-	BulletRule::State &curState = rule->getState(activeRuleState);
+	State *cur = rule->getState(activeRuleState);
 	
-	glBindBuffer(GL_ARRAY_BUFFER, curState.bufferGl[0]);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, curState.bufferGl[1]);
+	glBindBuffer(GL_ARRAY_BUFFER, cur->bufferGl[0]);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, cur->bufferGl[1]);
 	
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_COLOR_ARRAY);
@@ -118,11 +101,12 @@ void Bullet::draw()
 	glColorPointer(3, GL_FLOAT, sizeof(BulletRule::Vertex), BUFFER_OFFSET(sizeof(GLfloat)*2));
 	
 	int ci = 0;
-	for(int i=0; i<curState.mFigures.size(); i++) {
-		BulletRule::RenderFragment &frag = curState.mFigures[i];
+	//printf("%d\n", cur->mFigures.size());
+	for(int i=0; i<cur->mFigures.size(); i++) {
+		State::RenderFragment &frag = cur->mFigures[i];
 		
-		glDrawElements(GL_TRIANGLE_FAN, frag.numPoints+1, GL_UNSIGNED_SHORT, BUFFER_OFFSET(sizeof(GLushort)*ci) );
-		ci += frag.numPoints+1;
+		glDrawElements(GL_TRIANGLE_FAN, frag.numVertex+2, GL_UNSIGNED_SHORT, BUFFER_OFFSET(sizeof(GLushort)*ci) );
+		ci += frag.numVertex+2;
 	}
 	
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -137,9 +121,10 @@ void Bullet::setRule(int r)
 	activeRuleState = r;
 	ruleTimer = 0.0;
 	
-	BulletRule::State &state = rule->getState(activeRuleState);
+	State *state = rule->getState(activeRuleState);
+	state->activate(this);
 	
-	switch(state.switchType)
+	/*switch(state->switchType)
 	{
 		case BulletRule::Fan:
 			fparam[1] = state.iparam[0] / state.length;
@@ -148,10 +133,10 @@ void Bullet::setRule(int r)
 		
 		default:
 			break;
-	}
+	}*/
 }
 
-void Bullet::seekPoint(BulletRule::State& state, double delta)
+/*void Bullet::seekPoint(BulletRule::State& state, double delta)
 {
 	double len = sqrt(vx*vx+vy*vy);
 	double angle = atan2(vy,vx);
@@ -232,7 +217,7 @@ void Bullet::rotateAngle(BulletRule::State& state)
 	vy = state.fparam[1]*sin(angle);
 	
 	nextRule();
-}
+}*/
 
 // mdBullet
 //
@@ -245,7 +230,7 @@ mdBullet::~mdBullet()
 
 void mdBullet::startup()
 {
-	rng.seed(1236);
+	rng.seed(time(0));
 }
 
 void mdBullet::shutdown()

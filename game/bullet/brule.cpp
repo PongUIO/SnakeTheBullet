@@ -4,18 +4,28 @@
 #include "brule.h"
 #include "bullet.h"
 
+#include "state/CircleSpawn.h"
+#include "state/IdleState.h"
+#include "state/BulletFan.h"
+#include "state/MoveRandom.h"
+#include "state/SeekPoint.h"
+
 #include <GL/glext.h>
 
 #define ATTEMPTS 8
 #define STATE_ATTEMPTS 4
-#define PI 3.1415927
 
 BulletRule::~BulletRule()
 {
-	for(int i=0; i<mStateVec.size(); i++)
-		glDeleteBuffers(2, mStateVec[i].bufferGl);
+	for(int i=0; i<mStateVec.size(); i++) {
+		delete mStateVec[i];
+	}
 }
 
+State::~State()
+{
+	glDeleteBuffers(2, bufferGl);
+}
 
 BulletRule* BulletRule::designRule(double complexity)
 {
@@ -37,10 +47,6 @@ BulletRule* BulletRule::designRule(double complexity)
 			break;
 	}
 	
-	for(int i=0; i<best->mStateVec.size(); i++)
-		printf("%d ", best->mStateVec[i].switchType);
-	printf("\n");
-	
 	return best;
 }
 
@@ -52,52 +58,155 @@ void BulletRule::generate(double complexity)
 	
 	for(int i=0; i<numStates; i++) {
 		double stateComplexity = (complexity-mComplexity)/double(numStates-i);
+		if(stateComplexity <= 0.0)
+			stateComplexity = 0.0;
 		
 		mStateVec.push_back( constructState(stateComplexity) );
 		mComplexity = 0.0;
 		for(int j=mStateVec.size()-1; j>=0; j--)
-			mComplexity += mStateVec[j].computeComplexity(mComplexity);
+			mComplexity += mStateVec[j]->computeComplexity(mComplexity);
 		
-		mLength += mStateVec.back().length;
+		mLength += mStateVec.back()->duration;
 	}
 	
 	// Append a final state that does nothing
-	State state;
-	state.generate(0.0);
+	State *state = new IdleState();
+	state->setup(0.0);
 	mStateVec.push_back( state );
-	mLength += mStateVec.back().length;
+	mLength += mStateVec.back()->duration;
 }
 
 /**
  * Constructs a state aiming for a specific complexity.
  */
-BulletRule::State BulletRule::constructState(double idealComplexity)
+State *BulletRule::constructState(double idealComplexity)
 {
-	bool isFirst=true;
-	State best, state;
+	State *best=NULL;
+	State *state;
 	
 	for(int i=0; i<STATE_ATTEMPTS; i++) {
-		state = State();
-		state.generate(idealComplexity);
+		int type;
+		if(idealComplexity > 0.0)
+			type = mdBullet::random(SwIdleRule+1,MaxSwitch-1);
+		else
+			type = SwIdleRule;
 		
-		if(isFirst) {
+		switch(type)
+		{
+			case SwIdleRule: state = new IdleState(); break;
+			case SwCircleSpawn: state = new CircleSpawn(); break;
+			case SwMoveRandom: state = new MoveRandom(); break;
+			case SwSeekPoint: state = new SeekPoint(); break;
+			case SwFan: state = new BulletFan(); break;
+		}
+		state->setup(idealComplexity);
+		
+		if(best == NULL)
 			best = state;
-			isFirst=false;
-		} else if( fabs(state.computeComplexity()-idealComplexity) < fabs(best.computeComplexity()-idealComplexity) ) {
+		else if( fabs(state->computeComplexity(0.0)-idealComplexity) < fabs(best->computeComplexity(0.0)-idealComplexity) ) {
+			delete best;
 			best = state;
 		}
 	}
 	return state;
 }
 
-void BulletRule::State::generate(double complexity)
+void State::setup(double cplx)
 {
-	// Generate logic
-	if(complexity > 0.0)
-		switchType = (SwitchType)mdBullet::random(IdleRule+1,MaxSwitch-1);
-	else
-		switchType = IdleRule;
+	generate(cplx);
 	
+	double realCplx = computeComplexity(0.0);
+	
+	// Generate visuals
+	{
+		if(realCplx < 1.0)
+			realCplx = 1.0;
+		
+		int numFragments = mdBullet::random(2,3+log(1+realCplx));
+		int numVertex = 0;
+		
+		for(int i=0; i<numFragments; i++) {
+			double size = sqrt(realCplx) / sqrt(double(i+1));
+			size *= 0.015;
+			
+			RenderFragment frag;
+			frag.moveOffset = i==0 ? 0.0 : mdBullet::drandi(0.0, size*0.5 * double(i)/double(numFragments));
+			frag.baseAngle = mdBullet::drandi(0.0, 2.0*PI);
+			
+			frag.spikes.resize(mdBullet::random(1,2+log(1+realCplx)));
+			for(int i=0; i<frag.spikes.size(); i++) {
+				RenderFragment::Spike &spike = frag.spikes[i];
+				
+				spike.radius = mdBullet::drandi(size*0.1, size*1.5);
+				
+				spike.r = mdBullet::drandi(0.1, 1.0);
+				spike.g = mdBullet::drandi(0.1, 1.0);
+				spike.b = mdBullet::drandi(0.1, 1.0);
+			}
+			
+			frag.numVertex = mdBullet::random(4,5+log(1+realCplx*realCplx) );
+			
+			mFigures.push_back(frag);
+			
+			// 1 center point + numPoints edges.
+			numVertex += 2+frag.numVertex;
+		}
+		
+		glGenBuffers(2, bufferGl);
+		glBindBuffer(GL_ARRAY_BUFFER, bufferGl[0]);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bufferGl[1]);
+		
+		// numFragments * (root-vertex (xy-rgb) + numPoints*(xy-rgb))
+		BulletRule::Vertex data[ numVertex ];
+		GLushort index[ numVertex ];
+		
+		int cv = 0;
+		for(int f=0; f<numFragments; f++) {
+			RenderFragment &frag = mFigures[f];
+			
+			int first=cv;
+			data[cv].x = 0.0;
+			data[cv].y = 0.0;
+			data[cv].r = mdBullet::drandi(0.1,1.0);
+			data[cv].g = mdBullet::drandi(0.1,1.0);
+			data[cv].b = mdBullet::drandi(0.1,1.0);
+			
+			index[cv] = cv;
+			cv++;
+			
+			for(int p=0; p<mFigures[f].numVertex; p++) {
+				RenderFragment::Spike &spike = frag.spikes[p%frag.spikes.size()];
+				
+				double curAngle = frag.baseAngle + (p / double(frag.numVertex) ) *2.0*PI;
+				double radius = spike.radius;
+				
+				double xPos = cos(frag.baseAngle)*frag.moveOffset + cos(curAngle)*radius;
+				double yPos = sin(frag.baseAngle)*frag.moveOffset + sin(curAngle)*radius;;
+				
+				data[cv].x = xPos;
+				data[cv].y = yPos;
+				data[cv].r = spike.r;
+				data[cv].g = spike.g;
+				data[cv].b = spike.b;
+				index[cv] = cv;
+				cv++;
+			}
+			
+			data[cv] = data[first+1];
+			index[cv] = cv;
+			cv++;
+		}
+		
+		glBufferData(GL_ARRAY_BUFFER, sizeof(BulletRule::Vertex)*numVertex, data, GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort)*numVertex, index, GL_STATIC_DRAW);
+		
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	}
+}
+
+/*void BulletRule::State::generate(double complexity)
+{
 	length = 0.0;
 	switch(switchType)
 	{
@@ -148,92 +257,8 @@ void BulletRule::State::generate(double complexity)
 	
 	realComplexity = computeComplexity();
 	
-	// Generate visuals
-	{
-		if(realComplexity < 1.0)
-			realComplexity = 1.0;
-		
-		int numFragments = mdBullet::random(2,3+log(1+realComplexity));
-		int numVertex = 0;
-		
-		for(int i=0; i<numFragments; i++) {
-			double size = sqrt(realComplexity) / sqrt(double(i+1));
-			size *= 0.015;
-			
-			RenderFragment frag;
-			frag.r = mdBullet::drandi(0.1,1.0);
-			frag.g = mdBullet::drandi(0.1,1.0);
-			frag.b = mdBullet::drandi(0.1,1.0);
-			
-			frag.moveOffset = i==0 ? 0.0 : mdBullet::drandi(0.0, size*0.5 * double(i)/double(numFragments));
-			frag.baseAngle = mdBullet::drandi(0.0, 2.0*PI);
-			
-			frag.spikes.resize(mdBullet::random(1,2+log(1+realComplexity)));
-			for(int i=0; i<frag.spikes.size(); i++) {
-				RenderFragment::Spike &spike = frag.spikes[i];
-				
-				spike.radius = mdBullet::drandi(size*0.75, size*1.5);
-				
-				spike.r = mdBullet::drandi(0.1, 1.0);
-				spike.g = mdBullet::drandi(0.1, 1.0);
-				spike.b = mdBullet::drandi(0.1, 1.0);
-			}
-			
-			frag.numPoints = mdBullet::random(4,5+log(1+realComplexity*realComplexity) );
-			
-			mFigures.push_back(frag);
-			
-			// 1 center point + numPoints edges.
-			numVertex += 1+frag.numPoints;
-		}
-		
-		glGenBuffers(2, bufferGl);
-		glBindBuffer(GL_ARRAY_BUFFER, bufferGl[0]);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bufferGl[1]);
-		
-		// numFragments * (root-vertex (xy-rgb) + numPoints*(xy-rgb))
-		Vertex data[ numVertex ];
-		GLushort index[ numVertex ];
-		
-		int cv = 0;
-		for(int f=0; f<numFragments; f++) {
-			RenderFragment &frag = mFigures[f];
-			
-			data[cv].x = 0.0;
-			data[cv].y = 0.0;
-			data[cv].r = frag.r;
-			data[cv].g = frag.g;
-			data[cv].b = frag.b;
-			
-			index[cv] = cv;
-			cv++;
-			
-			for(int p=0; p<mFigures[f].numPoints; p++) {
-				RenderFragment::Spike &spike = frag.spikes[p%frag.spikes.size()];
-				
-				double curAngle = frag.baseAngle + (p / double(frag.numPoints) ) *2.0*PI;
-				double radius = spike.radius;
-				
-				double xPos = cos(frag.baseAngle)*frag.moveOffset + cos(curAngle)*radius;
-				double yPos = sin(frag.baseAngle)*frag.moveOffset + sin(curAngle)*radius;;
-				
-				data[cv].x = xPos;
-				data[cv].y = yPos;
-				data[cv].r = spike.r;
-				data[cv].g = spike.g;
-				data[cv].b = spike.b;
-				index[cv] = cv;
-				cv++;
-			}
-		}
-		
-		glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex)*numVertex, data, GL_STATIC_DRAW);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort)*numVertex, index, GL_STATIC_DRAW);
-		
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	}
-}
+	
+}*/
 
 /**
  * Calculates the ideal number of rules for a given complexity.
@@ -244,7 +269,7 @@ int BulletRule::calcNumRules(double complexity)
 /**
  * Computes the complexity of a given input state.
  */
-double BulletRule::State::computeComplexity(double prevComplexity)
+/*double BulletRule::State::computeComplexity(double prevComplexity)
 {
 	double tmp = 0.0;
 	
@@ -285,3 +310,4 @@ double BulletRule::State::computeComplexity(double prevComplexity)
 	
 	return tmp;
 }
+*/

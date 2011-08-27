@@ -3,6 +3,10 @@
 
 #include <boost/random.hpp>
 
+#ifndef PI
+#define PI 3.1415927
+#endif
+
 #include "../factory.h"
 #include "../module.h"
 
@@ -28,14 +32,19 @@ class Bullet {
 		void draw();
 		
 		bool isDead() { return toDie; }
+		void kill() { toDie=true; }
 		
-	private:
+		BulletRule *getRule() { return rule; }
+		int getActiveState() { return activeRuleState; }
+		
 		double x,y;
 		double vx, vy;
 		
 		double fparam[4];
 		double iparam[4];
 		
+		void nextRule() { setRule(activeRuleState+1); }
+	
 		BulletRule *rule;
 		int activeRuleState;
 		double ruleTimer;
@@ -43,19 +52,11 @@ class Bullet {
 		double renderAngle;
 		double initialAngle;
 		
+		double scale;
+		
 		bool toDie;
 		
 		void setRule(int rule);
-		void nextRule() { setRule(activeRuleState+1); }
-		
-		// State processing
-		void circleSpawn(BulletRule::State &state);
-		void rotateAngle(BulletRule::State &state);
-		void moveRandom(BulletRule::State &state);
-		void changeSpeed(BulletRule::State &state);
-		
-		void seekPoint(BulletRule::State &state, double delta);
-		void fan(BulletRule::State &state, double delta);
 };
 
 class mdBullet : public Module, public Factory<Bullet> {
