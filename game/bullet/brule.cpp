@@ -35,6 +35,7 @@ BulletRule* BulletRule::designRule(double complexity)
 		BulletRule *rule = new BulletRule();
 		
 		rule->generate(complexity);
+		printf("\tComplexity: %g\n", rule->getComplexity());
 		
 		if(best == NULL)
 			best = rule;
@@ -50,6 +51,7 @@ BulletRule* BulletRule::designRule(double complexity)
 	}
 	
 	printf("Best rule: %g (ideal %g)\n", best->getComplexity(), complexity);
+	printf("Rule state size: %d\n", best->mStateVec.size());
 	
 	return best;
 }
@@ -67,15 +69,16 @@ void BulletRule::generate(double complexity)
 	mLength += mStateVec.back()->duration;
 	
 	int stateCount=0;
-	while(mComplexity < complexity) {
-		double stateComplexity = (complexity-mComplexity)/double(stateCount+1);
+	while(mComplexity < complexity && stateCount<numStates) {
+		double stateComplexity = (complexity-mComplexity)/double(numStates-stateCount);
 		if(stateComplexity <= 0.0)
 			break;
 		
 		mStateVec.push_back( constructState(stateComplexity) );
 		mComplexity = 0.0;
-		for(int j=mStateVec.size()-1; j>=0; j--)
-			mComplexity += mStateVec[j]->computeComplexity(mComplexity);
+		for(int j=0; j<mStateVec.size(); j++) {
+			mComplexity = mStateVec[j]->computeComplexity(mComplexity);
+		}
 		
 		mLength += mStateVec.back()->duration;
 		stateCount++;
@@ -99,9 +102,10 @@ State *BulletRule::constructState(double idealComplexity)
 	for(int i=0; i<STATE_ATTEMPTS; i++) {
 		int type;
 		if(idealComplexity > 0.0)
-			type = mdBullet::random(0,MaxSwitch-1);
-		else
-			printf("Warning: %g\n", idealComplexity);
+			type = mdBullet::random(SwIdleRule+1,MaxSwitch-1);
+		
+		if(mdBullet::random(0,12) == 0)
+			type = SwIdleRule;
 		
 		switch(type)
 		{
@@ -115,7 +119,7 @@ State *BulletRule::constructState(double idealComplexity)
 		
 		if(best == NULL)
 			best = state;
-		else if( fabs(state->computeComplexity(0.0)-idealComplexity) < fabs(best->computeComplexity(0.0)-idealComplexity) ) {
+		else if( fabs(state->computeComplexity(1.0)-idealComplexity) < fabs(best->computeComplexity(1.0)-idealComplexity) ) {
 			delete best;
 			best = state;
 		} else {
@@ -244,4 +248,4 @@ void State::setup(double cplx)
  * Calculates the ideal number of rules for a given complexity.
  */
 int BulletRule::calcNumRules(double complexity)
-{	return mdBullet::random(1, 2+log(1+pow(complexity,1.0)) ); }
+{	return mdBullet::random(1, 3+log(1+pow(complexity,1.0)) ); }

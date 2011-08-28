@@ -31,5 +31,5 @@ void CircleSpawn::finishCall(Bullet* b)
 double CircleSpawn::computeComplexity(double prev)
 {	/*double mult = 1.0 * (1.0 + 2.0*mBulletCount*mBaseSpeed);
 	return (1.0+prev) * mult;*/
-	return prev * pow(double(mBulletCount), 0.65);
+	return prev * pow(double(mBulletCount), 1.0);
 }

@@ -12,7 +12,7 @@ void SeekPoint::generate(double cplx)
 		mTargetX = 0.0;
 		mTargetY = 0.0;
 	}
-	mSpeed = mdBullet::drandi(0.01*sqrt(cplx), 0.035*sqrt(cplx));
+	mSpeed = mdBullet::drandi(0.005*sqrt(cplx), 0.015*sqrt(cplx));
 	
 	mSeekRandom = !mdBullet::random(0,4);
 	
@@ -33,7 +33,7 @@ void SeekPoint::activate(Bullet* b)
 
 double SeekPoint::computeComplexity(double prev)
 {
-    return prev + 1.0 + 0.02*prev*mSeekRandom;
+    return prev + 0.05*prev + 1.0 + 0.05*prev*mSeekRandom;
 }
 
 void SeekPoint::finishCall(Bullet* b)

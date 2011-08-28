@@ -12,7 +12,7 @@ mdController::~mdController()
 
 void mdController::startup()
 {
-	mCurComplexity = 1000.0;
+	mCurComplexity = 250.0;
 	nextPhase();
 }
 
@@ -59,10 +59,14 @@ void mdController::nextPhase()
 		mNextPhaseTimer = rule->getLength() + 1.0;
 		
 		int numBullets = cShare / rule->getComplexity();
-		double inAngle = mdBullet::drandi(2.5, 3.5);
+		numBullets = numBullets + numBullets%4; // Make it a power of four number
+		printf("%d\n", numBullets);
+		double inAngle = mdBullet::drandi(PI - PI/6.0, PI + PI/6.0);
 		double baseAngle = mdBullet::drandi(0.0, 2.0*PI);
 		
 		cplxShare -= numBullets * rule->getComplexity();
+		
+		double bS = mdBullet::drandi(0.1,0.2);
 		
 		switch( mdBullet::random(0, StyleMax-1) )
 		{
@@ -72,7 +76,7 @@ void mdController::nextPhase()
 					modBullet.create(
 						Bullet::Config(
 							cos(angle)*sqrt(2), sin(angle)*sqrt(2),
-							cos(angle+inAngle)*0.1, sin(angle+inAngle)*0.1,
+							cos(angle+inAngle)*bS, sin(angle+inAngle)*bS,
 							rule
 						)
 					);
@@ -88,7 +92,7 @@ void mdController::nextPhase()
 						Bullet::Config(
 							b.xOff*1.05 + b.xMult* (off+double(i)/double(numBullets)),
 							b.yOff*1.05 + b.yMult* (off+double(i)/double(numBullets)),
-							-b.xOff*0.1, -b.yOff*0.1,
+							-b.xOff*bS, -b.yOff*bS,
 							rule
 						)
 					);

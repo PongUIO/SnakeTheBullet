@@ -5,7 +5,7 @@ void BulletFan::generate(double cplx)
 {
 	mAngle = mdBullet::drandi(0.0, 2.0*PI);
 	mBaseSpeed = mdBullet::drandi(0.005*(1.0+sqrt(cplx)), 0.05*(1.0+0.4*sqrt(cplx)));
-	mCount = mdBullet::random(2, 2+(1.0+sqrt(cplx)));
+	mCount = mdBullet::random(2, 2+(1.0+pow(cplx,0.75)));
 	mInheritVel = mdBullet::random(0,1);
 	
 	duration = mdBullet::drandi(4.5, 8.0);
@@ -50,5 +50,6 @@ void BulletFan::finishCall(Bullet* b)
 
 double BulletFan::computeComplexity(double prev)
 {
-    return prev*pow(double(mCount), 0.65);//(1.0+prev) * 1.5 * pow(mCount, 0.66);
+	double res = prev*pow(double(mCount), 1.0);
+    return res;//(1.0+prev) * 1.5 * pow(mCount, 0.66);
 }
