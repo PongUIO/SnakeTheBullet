@@ -57,6 +57,8 @@ void mdPlayer::draw()
 		glVertex2f( 0, w );
 	glEnd(); 
 	//test hitboxpolygon
+	//glLoadIdentity();
+	glTranslatef(w*0.5-0.01, h*0.5-0.01, 0.0);
 	glBegin(GL_QUADS);
 		glColor3f(1.0,0.0,0.0);
 		glVertex2f( 0, 0 );
