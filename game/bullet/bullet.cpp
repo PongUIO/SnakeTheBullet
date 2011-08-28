@@ -107,8 +107,8 @@ void Bullet::draw()
 	for(int i=0; i<cur->mFlowers.size(); i++) {
 		State::RenderFlower &flower = cur->mFlowers[i];
 		
-		glDrawElements(GL_TRIANGLE_FAN, flower.mVertexCount+2, GL_UNSIGNED_SHORT, BUFFER_OFFSET(sizeof(GLushort)*ci) );
-		ci += flower.mVertexCount+2;
+		glDrawElements(GL_TRIANGLE_FAN, flower.mVertexCount, GL_UNSIGNED_SHORT, BUFFER_OFFSET(sizeof(GLushort)*ci) );
+		ci += flower.mVertexCount;
 	}
 	
 	glBindBuffer(GL_ARRAY_BUFFER, 0);

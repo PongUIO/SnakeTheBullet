@@ -6,6 +6,7 @@
 
 #include "bstate.h"
 
+#include <stdio.h>
 class BulletRule {
 	public:
 		BulletRule() : mReferences(0), mComplexity(0.0) {}

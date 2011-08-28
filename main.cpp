@@ -17,7 +17,7 @@ void init_GL() {
 }
 
 void startup() {
-	SDL_Init( SDL_INIT_EVERYTHING );
+	SDL_Init( SDL_INIT_VIDEO );
 	
 	const SDL_VideoInfo *info = SDL_GetVideoInfo();
 	int size = info->current_h<info->current_w ? info->current_h : info->current_w;

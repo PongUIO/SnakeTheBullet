@@ -41,6 +41,8 @@ BulletRule* BulletRule::designRule(double complexity)
 		else if( fabs(rule->getComplexity()-complexity) < fabs(best->getComplexity()-complexity) ) {
 			delete best;
 			best = rule;
+		} else {
+			delete rule;
 		}
 		
 		if( fabs(best->getComplexity()-complexity) < 1.0 )
@@ -116,9 +118,11 @@ State *BulletRule::constructState(double idealComplexity)
 		else if( fabs(state->computeComplexity(0.0)-idealComplexity) < fabs(best->computeComplexity(0.0)-idealComplexity) ) {
 			delete best;
 			best = state;
+		} else {
+			delete state;
 		}
 	}
-	return state;
+	return best;
 }
 
 struct RenderFragment {

@@ -107,7 +107,8 @@ class Factory {
 		
 		void killAll() {
 			for(uint32_t i = 0; i<mData.size(); i++) {
-				deleteInstance(mData[i]);
+				if(mData[i])
+					deleteInstance(mData[i]);
 			}
 			mData.clear();
 			mFreeId = IdStack(); // Clears the free ID list
