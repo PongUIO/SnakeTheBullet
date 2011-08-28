@@ -59,9 +59,8 @@ void mdController::nextPhase()
 		mNextPhaseTimer = rule->getLength() + 1.0;
 		
 		int numBullets = cShare / rule->getComplexity();
-		numBullets = numBullets + numBullets%4; // Make it a power of four number
 		printf("%d\n", numBullets);
-		double inAngle = mdBullet::drandi(PI - PI/6.0, PI + PI/6.0);
+		double inAngle = mdBullet::drandi(PI - PI/12.0, PI + PI/12.0);
 		double baseAngle = mdBullet::drandi(0.0, 2.0*PI);
 		
 		cplxShare -= numBullets * rule->getComplexity();

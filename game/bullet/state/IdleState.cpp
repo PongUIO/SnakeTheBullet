@@ -8,7 +8,7 @@ IdleState::IdleState(bool endDeath): mDie(endDeath)
 void IdleState::generate(double cplx)
 {
 	if(mDie)
-		duration = mdBullet::drandi(3.5, 7.5);
+		duration = mdBullet::drandi(3.5, 9.5);
 	else
 		duration = mdBullet::drandi(2, 3);
 }

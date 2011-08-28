@@ -12,7 +12,7 @@
 
 #include <GL/glext.h>
 
-#define ATTEMPTS 6
+#define ATTEMPTS 12
 #define STATE_ATTEMPTS 6
 
 BulletRule::~BulletRule()
