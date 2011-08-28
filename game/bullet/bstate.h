@@ -24,23 +24,16 @@ class State {
 		GLuint bufferGl[2];
 		double duration;
 		
-		struct RenderFragment {
-			float baseAngle;
-			float moveOffset;
+		struct RenderFlower {
+			RenderFlower(int vc=0) : mVertexCount(vc) {}
 			
-			struct Spike {
-				float r,g,b;
-				float radius;
-			};
-			
-			typedef std::vector<Spike> SpikeVec;
-			SpikeVec spikes;
-			
-			int numVertex;
+			int mVertexCount;
 		};
 		
-		typedef std::vector<RenderFragment> FragmentVec;
-		FragmentVec mFigures;
+		typedef std::vector<RenderFlower> FlowerVec;
+		FlowerVec mFlowers;
+		
+		float mScale;
 };
 
 #endif

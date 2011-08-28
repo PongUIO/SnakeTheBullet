@@ -12,7 +12,7 @@ mdController::~mdController()
 
 void mdController::startup()
 {
-	mCurComplexity = 600.0;
+	mCurComplexity = 1000.0;
 	nextPhase();
 }
 
@@ -42,16 +42,17 @@ struct Border {
 
 void mdController::nextPhase()
 {
-	mCurComplexity += 200.0;
+	mCurComplexity += 10.0 + 0.05*mCurComplexity;
 	
-	int numRules = mdBullet::random(1, 1+sqrt(mCurComplexity / 25.0) );
+	int numRules = mdBullet::random(1, 1 + log(1+mCurComplexity/200.0) );
 	double maxLength = 0.0;
 	
+	double cplxShare = mCurComplexity;
 	for(int i=0; i<numRules; i++) {
-		double cShare = mCurComplexity / double(numRules);
+		double cShare = cplxShare / double(numRules-i);
 		
 		BulletRule *rule = BulletRule::designRule(
-			cShare / sqrt(cShare));
+			cShare / pow(cShare, 0.33));
 		
 		if(rule->getLength() > maxLength)
 			maxLength = rule->getLength();
@@ -60,6 +61,8 @@ void mdController::nextPhase()
 		int numBullets = cShare / rule->getComplexity();
 		double inAngle = mdBullet::drandi(2.5, 3.5);
 		double baseAngle = mdBullet::drandi(0.0, 2.0*PI);
+		
+		cplxShare -= numBullets * rule->getComplexity();
 		
 		switch( mdBullet::random(0, StyleMax-1) )
 		{
@@ -78,12 +81,13 @@ void mdController::nextPhase()
 			
 			case Side:
 			{
+				double off = mdBullet::drandi(0.0, 0.25);
 				for(int i=0; i<numBullets; i++) {
 					Border &b = borderData[i%4];
 					modBullet.create(
 						Bullet::Config(
-							b.xOff + b.xMult* double(i)/double(numBullets),
-							b.yOff + b.yMult* double(i)/double(numBullets),
+							b.xOff*1.05 + b.xMult* (off+double(i)/double(numBullets)),
+							b.yOff*1.05 + b.yMult* (off+double(i)/double(numBullets)),
 							-b.xOff*0.1, -b.yOff*0.1,
 							rule
 						)
@@ -93,7 +97,11 @@ void mdController::nextPhase()
 				break;
 		}
 		
+		printf("Share complexity: %g\n", numBullets*rule->getComplexity());
+		printf("Duration: %g\n", rule->getLength());
 	}
+	printf("Total complexity: %g / %g\n", mCurComplexity-cplxShare, mCurComplexity);
+	printf("\n");
 	
-	mNextPhaseTimer = maxLength*0.93 + 1.0;
+	mNextPhaseTimer = maxLength*0.6 + 1.0;
 }

@@ -91,6 +91,8 @@ void Bullet::draw()
 	glRotatef(renderAngle/PI*180.0, 0,0,1.0);
 	State *cur = rule->getState(activeRuleState);
 	
+	glScalef(cur->mScale, cur->mScale, 1.0);
+	
 	glBindBuffer(GL_ARRAY_BUFFER, cur->bufferGl[0]);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, cur->bufferGl[1]);
 	
@@ -102,11 +104,11 @@ void Bullet::draw()
 	
 	int ci = 0;
 	//printf("%d\n", cur->mFigures.size());
-	for(int i=0; i<cur->mFigures.size(); i++) {
-		State::RenderFragment &frag = cur->mFigures[i];
+	for(int i=0; i<cur->mFlowers.size(); i++) {
+		State::RenderFlower &flower = cur->mFlowers[i];
 		
-		glDrawElements(GL_TRIANGLE_FAN, frag.numVertex+2, GL_UNSIGNED_SHORT, BUFFER_OFFSET(sizeof(GLushort)*ci) );
-		ci += frag.numVertex+2;
+		glDrawElements(GL_TRIANGLE_FAN, flower.mVertexCount+2, GL_UNSIGNED_SHORT, BUFFER_OFFSET(sizeof(GLushort)*ci) );
+		ci += flower.mVertexCount+2;
 	}
 	
 	glBindBuffer(GL_ARRAY_BUFFER, 0);

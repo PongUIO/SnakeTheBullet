@@ -3,8 +3,8 @@
 
 void CircleSpawn::generate(double cplx)
 {
-	mBulletCount = mdBullet::random(3, 3+sqrt(cplx*0.5));
-	mBaseSpeed = mdBullet::drandi(0.015*sqrt(cplx), 0.05*sqrt(cplx));
+	mBulletCount = mdBullet::random(2, 4+sqrt(cplx*0.5));
+	mBaseSpeed = mdBullet::drandi(0.01*sqrt(cplx), 0.025*sqrt(cplx));
 	
 	duration = mdBullet::drandi(0.1, 6.5);
 }
@@ -16,7 +16,7 @@ void CircleSpawn::finishCall(Bullet* b)
 		b->getRule(), b->getActiveState()+1);
 	
 	for(int i=0; i<mBulletCount; i++) {
-		double angle = double(i) / double(mBulletCount) * 2.0*PI;
+		double angle = b->initialAngle + double(i) / double(mBulletCount) * 2.0*PI;
 		
 		cfg.vx = cos(angle)*mBaseSpeed;
 		cfg.vy = sin(angle)*mBaseSpeed;
@@ -29,4 +29,7 @@ void CircleSpawn::finishCall(Bullet* b)
 
 
 double CircleSpawn::computeComplexity(double prev)
-{	return (1.0+prev) * 1.0 * (1.0 + 0.05*mBulletCount*mBaseSpeed); }
+{	/*double mult = 1.0 * (1.0 + 2.0*mBulletCount*mBaseSpeed);
+	return (1.0+prev) * mult;*/
+	return prev * pow(double(mBulletCount), 0.65);
+}

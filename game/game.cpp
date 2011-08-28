@@ -5,8 +5,6 @@
 #include "signal.h"
 #include "timer.h"
 
-#include "bullet/bullet.h"
-
 class mdGame modGame;
 
 void mdGame::run()

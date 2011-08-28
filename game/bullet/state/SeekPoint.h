@@ -8,13 +8,15 @@ class SeekPoint : public State {
 		double computeComplexity(double prev);
 		void generate(double cplx);
 		
-		void activate(Bullet *b) {}
+		void activate(Bullet *b);
 		void process(Bullet *b, double delta);
 		void finishCall(Bullet *b);
 		
 	private:
 		double mTargetX, mTargetY;
 		double mSpeed;
+		
+		bool mSeekRandom;
 };
 
 #endif

@@ -16,6 +16,8 @@ class BulletFan : public State {
 		double mAngle;
 		double mBaseSpeed;
 		int mCount;
+		
+		bool mInheritVel;
 };
 
 #endif

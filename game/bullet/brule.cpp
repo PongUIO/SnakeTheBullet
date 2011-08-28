@@ -12,8 +12,8 @@
 
 #include <GL/glext.h>
 
-#define ATTEMPTS 16
-#define STATE_ATTEMPTS 8
+#define ATTEMPTS 6
+#define STATE_ATTEMPTS 6
 
 BulletRule::~BulletRule()
 {
@@ -47,20 +47,28 @@ BulletRule* BulletRule::designRule(double complexity)
 			break;
 	}
 	
+	printf("Best rule: %g (ideal %g)\n", best->getComplexity(), complexity);
+	
 	return best;
 }
 
 void BulletRule::generate(double complexity)
 {
 	int numStates = calcNumRules(complexity);
-	printf("%d\n", numStates);
 	mComplexity = 0.0;
 	mLength = 0.0;
 	
-	for(int i=0; i<numStates; i++) {
-		double stateComplexity = (complexity-mComplexity)/double(numStates-i);
+	// Append a final state that does nothing
+	State *state = new IdleState(false);
+	state->setup(0.0);
+	mStateVec.push_back( state );
+	mLength += mStateVec.back()->duration;
+	
+	int stateCount=0;
+	while(mComplexity < complexity) {
+		double stateComplexity = (complexity-mComplexity)/double(stateCount+1);
 		if(stateComplexity <= 0.0)
-			stateComplexity = 0.0;
+			break;
 		
 		mStateVec.push_back( constructState(stateComplexity) );
 		mComplexity = 0.0;
@@ -68,10 +76,11 @@ void BulletRule::generate(double complexity)
 			mComplexity += mStateVec[j]->computeComplexity(mComplexity);
 		
 		mLength += mStateVec.back()->duration;
+		stateCount++;
 	}
 	
 	// Append a final state that does nothing
-	State *state = new IdleState();
+	state = new IdleState(true);
 	state->setup(0.0);
 	mStateVec.push_back( state );
 	mLength += mStateVec.back()->duration;
@@ -88,13 +97,13 @@ State *BulletRule::constructState(double idealComplexity)
 	for(int i=0; i<STATE_ATTEMPTS; i++) {
 		int type;
 		if(idealComplexity > 0.0)
-			type = mdBullet::random(SwIdleRule+1,MaxSwitch-1);
+			type = mdBullet::random(0,MaxSwitch-1);
 		else
-			type = SwIdleRule;
+			printf("Warning: %g\n", idealComplexity);
 		
 		switch(type)
 		{
-			case SwIdleRule: state = new IdleState(); break;
+			case SwIdleRule: state = new IdleState(false); break;
 			case SwCircleSpawn: state = new CircleSpawn(); break;
 			case SwMoveRandom: state = new MoveRandom(); break;
 			case SwSeekPoint: state = new SeekPoint(); break;
@@ -112,11 +121,26 @@ State *BulletRule::constructState(double idealComplexity)
 	return state;
 }
 
+struct RenderFragment {
+	float baseAngle;
+	float moveOffset;
+	
+	struct Spike {
+		float r,g,b;
+		float radius;
+	};
+	
+	typedef std::vector<Spike> SpikeVec;
+	SpikeVec spikes;
+	
+	int numVertex;
+};
+
 void State::setup(double cplx)
 {
 	generate(cplx);
 	
-	double realCplx = computeComplexity(0.0);
+	double realCplx = computeComplexity(1.0);
 	
 	// Generate visuals
 	{
@@ -126,15 +150,19 @@ void State::setup(double cplx)
 		int numFragments = mdBullet::random(2,3+log(1+realCplx));
 		int numVertex = 0;
 		
+		typedef std::vector<RenderFragment> FragmentVec;
+		FragmentVec fragments;
+		
+		mScale = 0.01;
+		
 		for(int i=0; i<numFragments; i++) {
-			double size = sqrt(realCplx) / sqrt(double(i+1));
-			size = 0.015*sqrt(size);
+			double size = sqrt(sqrt(realCplx / double(i+1)));
 			
 			RenderFragment frag;
-			frag.moveOffset = i==0 ? 0.0 : mdBullet::drandi(0.0, size*0.5 * double(i)/double(numFragments));
+			frag.moveOffset = i==0 ? 0.0 : mdBullet::drandi(0.0, size);
 			frag.baseAngle = mdBullet::drandi(0.0, 2.0*PI);
 			
-			frag.spikes.resize(mdBullet::random(1,2+log(1+realCplx)));
+			frag.spikes.resize(mdBullet::random(1,2+log(1+2.0*realCplx)));
 			for(int i=0; i<frag.spikes.size(); i++) {
 				RenderFragment::Spike &spike = frag.spikes[i];
 				
@@ -145,9 +173,11 @@ void State::setup(double cplx)
 				spike.b = mdBullet::drandi(0.1, 1.0);
 			}
 			
-			frag.numVertex = mdBullet::random(4,5+log(1+realCplx*realCplx) );
+			frag.numVertex = mdBullet::random(3,4+log(1+1.25*realCplx*realCplx) );
 			
-			mFigures.push_back(frag);
+			fragments.push_back(frag);
+			
+			mFlowers.push_back( RenderFlower(frag.numVertex+2) );
 			
 			// 1 center point + numPoints edges.
 			numVertex += 2+frag.numVertex;
@@ -163,11 +193,11 @@ void State::setup(double cplx)
 		
 		int cv = 0;
 		for(int f=0; f<numFragments; f++) {
-			RenderFragment &frag = mFigures[f];
+			RenderFragment &frag = fragments[f];
 			
 			int first=cv;
-			data[cv].x = 0.0;
-			data[cv].y = 0.0;
+			data[cv].x = cos(frag.baseAngle) * frag.moveOffset;
+			data[cv].y = sin(frag.baseAngle) * frag.moveOffset;
 			data[cv].r = mdBullet::drandi(0.1,1.0);
 			data[cv].g = mdBullet::drandi(0.1,1.0);
 			data[cv].b = mdBullet::drandi(0.1,1.0);
@@ -175,7 +205,7 @@ void State::setup(double cplx)
 			index[cv] = cv;
 			cv++;
 			
-			for(int p=0; p<mFigures[f].numVertex; p++) {
+			for(int p=0; p<fragments[f].numVertex; p++) {
 				RenderFragment::Spike &spike = frag.spikes[p%frag.spikes.size()];
 				
 				double curAngle = frag.baseAngle + (p / double(frag.numVertex) ) *2.0*PI;
