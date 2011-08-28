@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include "player.h"
+#include "../bullet/bullet.h"
 
 class mdPlayer modPlayer;
 
@@ -40,18 +41,29 @@ void mdPlayer::process(double delta)
 	if(kdown && y-h*0.5>= -1) y -= delta*km;
 	if(kl && x-w*0.5>=-1) x -= delta*km;
 	if(kr && x+w*0.5 <=0.99) x += delta*km;
+	if(modBullet.checkCollision(x,y,0.02)) {//first bracket if in file
+		printf("hit\n");
+	}
 }
 
 void mdPlayer::draw()
 {
-	glTranslatef(x-w*0.5,y-h*0.5,0);
+	glTranslatef(x-(w*0.5),y-(h*0.5),0);//becoming scheeme code
 	glBegin(GL_QUADS);
 		glColor3f(1.0,1.0,1.0);
 		glVertex2f( 0, 0 );
 		glVertex2f( h, 0 );
 		glVertex2f( h, w );
 		glVertex2f( 0, w );
-	glEnd();
+	glEnd(); 
+	//test hitboxpolygon
+	glBegin(GL_QUADS);
+		glColor3f(1.0,0.0,0.0);
+		glVertex2f( 0, 0 );
+		glVertex2f( 0.02, 0 );
+		glVertex2f( 0.02, 0.02 );
+		glVertex2f( 0, 0.02);
+	glEnd(); 
 }
 
 
