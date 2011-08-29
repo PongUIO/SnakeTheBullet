@@ -52,10 +52,10 @@ void mdPlayer::process(double delta)
 	if(kct) km = 0.5;
 	if(ksh) km = 1.5;
 	if(kalt) km = 2;
-	if(kup && y+ph*0.5 <= 0.99) y += delta*km;
-	if(kdown && y-ph*0.5>= -1) y -= delta*km;
-	if(kl && x-pw*0.5>=-1) x -= delta*km;
-	if(kr && x+pw*0.5 <=0.99) x += delta*km;
+	if(kup && y+phb*0.5 <= 0.99) y += delta*km;
+	if(kdown && y-phb*0.5>= -1) y -= delta*km;
+	if(kl && x-phb*0.5>=-1) x -= delta*km;
+	if(kr && x+phb*0.5 <=0.99) x += delta*km;
 	if(modBullet.checkCollision(x,y,phb)) //first bracket if in file
 	{
 		printf("hit\n");

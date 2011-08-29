@@ -7,7 +7,7 @@
 class Item {
 	public:
 		
-		Item();
+		Item(double nx,double ny);
 		
 		void process(double delta);
 		void draw();

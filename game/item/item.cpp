@@ -15,11 +15,24 @@ void Item::process(double delta)
 
 }
 
+Item::Item(double nx, double ny)
+{
+	x = nx;
+	y = ny;
+	draw();
+}
+
+void mdItem::create(double nx, double ny)
+{
+	Item *obj = new Item(nx, ny);
+	addObj(obj);
+}
+
 void Item::draw()
 {
 	double d = 0.2;
 	glLoadIdentity();
-	glTranslatef(0.7,0.5,0);
+	glTranslatef(x,y,0);
 	glBegin(GL_QUADS);
 		glColor3f(0.0,0.0,1.0);
 		glVertex2f( 0, 0 );
@@ -38,7 +51,7 @@ bool Item::checkCollision(double tx, double ty, double size)
 
 void mdItem::startup()
 {
-	
+	create(0.7,0.6);
 }
 
 void mdItem::shutdown()
@@ -58,7 +71,7 @@ void mdItem::process(double delta)
 
 void mdItem::draw()
 {
-	
+	factoryCall( boost::bind(&Item::draw, _1) );
 }
 
 mdItem::mdItem() : Factory()
