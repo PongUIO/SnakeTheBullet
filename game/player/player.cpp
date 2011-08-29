@@ -17,7 +17,6 @@ void mdPlayer::startup()
 	x = y = 0;
 	ph = pw = 0.1;
 	phb = 0.01;
-	km = 0.7;
 	s = 0;
 	l = 5;
 }
@@ -49,6 +48,7 @@ void mdPlayer::input( SDL_Event *event )
 
 void mdPlayer::process(double delta)
 {
+	km = 0.7;
 	if(kct) km = km*0.5;
 	if(ksh) km = km*1.5;
 	if(kalt) km = km*2;
