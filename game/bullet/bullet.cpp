@@ -127,10 +127,10 @@ void Bullet::setRule(int r)
 	state->activate(this);
 }
 
-bool Bullet::checkCollision(double tx, double ty, double size)
+bool Bullet::checkCollision(double tx, double ty, double size2)
 {
-	double dist = sqrt( (tx-x)*(tx-x) + (ty-y)*(ty-y) );
-	if(dist < size)
+	double dist2 = (tx-x)*(tx-x) + (ty-y)*(ty-y);
+	if(dist2 < size2)
 		modBullet.hasCol = true;
 }
 
@@ -158,7 +158,7 @@ void mdBullet::shutdown()
 bool mdBullet::checkCollision(double tx, double ty, double size)
 {
 	hasCol=false;
-	factoryCall( boost::bind(&Bullet::checkCollision, _1, tx, ty, size) );
+	factoryCall( boost::bind(&Bullet::checkCollision, _1, tx, ty, size*size) );
 	return hasCol;
 }
 

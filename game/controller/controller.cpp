@@ -13,6 +13,7 @@ mdController::~mdController()
 void mdController::startup()
 {
 	mCurComplexity = 250.0;
+	mCurPhase = 0;
 	nextPhase();
 }
 
@@ -43,6 +44,7 @@ struct Border {
 void mdController::nextPhase()
 {
 	mCurComplexity += 10.0 + 0.05*mCurComplexity;
+	mCurPhase++;
 	
 	int numRules = mdBullet::random(1, 1 + log(1+mCurComplexity/200.0) );
 	double maxLength = 0.0;
@@ -104,6 +106,7 @@ void mdController::nextPhase()
 		printf("Duration: %g\n", rule->getLength());
 	}
 	printf("Total complexity: %g / %g\n", mCurComplexity-cplxShare, mCurComplexity);
+	printf("Current phase: %d\n", mCurPhase);
 	printf("\n");
 	
 	mNextPhaseTimer = maxLength*0.6 + 1.0;
