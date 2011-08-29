@@ -14,6 +14,7 @@ mdController::~mdController()
 void mdController::startup()
 {
 	mCurComplexity = 250.0;
+	mItemSpawnTimer = 0.0;
 	mCurPhase = 0;
 	nextPhase();
 }
@@ -29,6 +30,16 @@ void mdController::process(double delta)
 	if(mNextPhaseTimer <= 0.0) {
 		nextPhase();
 	}
+	
+	mItemSpawnTimer -= delta;
+	if(mItemSpawnTimer <= 0.0) {
+		int numi = mdBullet::random(1,1+log(1+mCurComplexity/500.0));
+		while( (numi--) ) {
+			modItem.create(mdBullet::drandi(-0.9, 0.9), mdBullet::drandi(-0.9,0.9));
+		}
+		mItemSpawnTimer = mNextPhaseTimer+1;
+	}
+	
 }
 
 
@@ -61,17 +72,14 @@ void mdController::nextPhase()
 			maxLength = rule->getLength();
 		mNextPhaseTimer = rule->getLength() + 1.0;
 		
+		mItemSpawnTimer = mdBullet::drandi(mNextPhaseTimer*0.3, mNextPhaseTimer*0.7);
+		
 		int numBullets = cShare / rule->getComplexity();
 		printf("%d\n", numBullets);
 		double inAngle = mdBullet::drandi(PI - PI/12.0, PI + PI/12.0);
 		double baseAngle = mdBullet::drandi(0.0, 2.0*PI);
 		
 		cplxShare -= numBullets * rule->getComplexity();
-		
-		int numi = mdBullet::random(1,1+log(1+mCurComplexity/500.0));
-		while( (numi--) ) {
-			modItem.create(mdBullet::drandi(-0.9, 0.9), mdBullet::drandi(-0.9,0.9));
-		}
 		
 		double bS = mdBullet::drandi(0.1,0.2);
 		

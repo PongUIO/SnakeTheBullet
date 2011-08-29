@@ -32,6 +32,7 @@ class mdController : public Module {
 		
 		double mCurComplexity;
 		double mNextPhaseTimer;
+		double mItemSpawnTimer;
 		int mCurPhase;
 };
 
