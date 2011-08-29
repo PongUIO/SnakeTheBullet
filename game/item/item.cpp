@@ -55,7 +55,7 @@ bool Item::checkCollision(double tx, double ty, double size2)
 
 void mdItem::startup()
 {
-	create(0.7,0.6);
+	
 }
 
 void mdItem::shutdown()
