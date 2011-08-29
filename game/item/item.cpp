@@ -47,8 +47,10 @@ void Item::draw()
 bool Item::checkCollision(double tx, double ty, double size2)
 {
 	double dist2 = (tx-x)*(tx-x) + (ty-y)*(ty-y);
-	if(dist2 < size2)
+	if(dist2 < size2){
 		modItem.hasCol = true;
+		kill();
+	}
 } 
 
 void mdItem::startup()
