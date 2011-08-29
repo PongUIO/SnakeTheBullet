@@ -43,7 +43,7 @@ struct Border {
 
 void mdController::nextPhase()
 {
-	mCurComplexity += 10.0 + 0.05*mCurComplexity;
+	mCurComplexity += 25.0 + 0.035*mCurComplexity;
 	mCurPhase++;
 	
 	int numRules = mdBullet::random(1, 1 + log(1+mCurComplexity/200.0) );

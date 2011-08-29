@@ -32,8 +32,20 @@ void mdGame::run()
 			modSignal.process(delta);
 			
 			glClear( GL_COLOR_BUFFER_BIT );
+			
 			glMatrixMode( GL_MODELVIEW);
 			glLoadIdentity();
+			
+			/*glEnable(GL_BLEND);
+			glBlendFunc(GL_ZERO, GL_ONE_MINUS_SRC_ALPHA);
+			glColor4f(0,0,0,0.02);
+			glBegin(GL_QUADS);
+				glVertex2f(-1,-1);
+				glVertex2f( 1,-1);
+				glVertex2f( 1, 1);
+				glVertex2f(-1, 1);
+			glEnd();
+			glDisable(GL_BLEND);*/
 			
 			modSignal.draw();
 			

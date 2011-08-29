@@ -32,7 +32,7 @@ class BulletRule {
 			SwIdleRule=0,
 			SwCircleSpawn,// Spawns a circle of bullets (iparam[0]=numBullets, fparam[0]=baseSpeed)
 			SwMoveRandom,	// Moves in a random direction (fp0=speed)
-			SwSeekPoint,	// Seeks a specific point (fp0=target x, fp1=target y, fp2=speed)
+			SwChangeMove,	// Alters the movement of a bullet
 			SwFan,		// Creates a fan of bullets over time (fp0=target angle)
 			
 			MaxSwitch

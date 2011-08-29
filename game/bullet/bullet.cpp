@@ -44,6 +44,8 @@ int mdBullet::random(int min, int max)
 Bullet::Bullet(const Bullet::Config& config) :
 	x(config.x),y(config.y),
 	vx(config.vx),vy(config.vy),
+	rang(0), racc(0),
+	rhalt(0),
 	
 	rule(0),
 	ruleTimer(0.0),
@@ -77,6 +79,23 @@ void Bullet::process(double delta)
 	ruleTimer += delta;
 	if(ruleTimer >= state->duration) {
 		state->finishCall(this);
+	}
+	
+	if(rang != 0 || racc != 0) {
+		double angle = atan2(vy,vx);
+		double len =  sqrt(vx*vx+vy*vy);
+		
+		angle += rang*delta;
+		initialAngle += rang*delta;
+		len += racc*delta;
+		
+		vx = cos(angle)*len;
+		vy = sin(angle)*len;
+		
+		rhalt -= delta;
+		if(rhalt <= 0.0) {
+			rang = racc = 0.0;
+		}
 	}
 	
 	x += vx*delta;

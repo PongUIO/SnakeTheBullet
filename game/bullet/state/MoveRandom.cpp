@@ -10,7 +10,7 @@ void MoveRandom::generate(double cplx)
 
 double MoveRandom::computeComplexity(double prev)
 {
-	double res = prev + 0.5*prev + 1.0;
+	double res = prev + 0.25*prev + 1.0;
     return res;//(1.0+prev) * 4.0 * (1.0 + mBaseSpeed*0.5);
 }
 

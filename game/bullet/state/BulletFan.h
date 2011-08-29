@@ -1,6 +1,7 @@
 #ifndef BULLETFAN_H
 #define BULLETFAN_H
 
+#include <vector>
 #include "../bstate.h"
 
 class BulletFan : public State {
@@ -13,11 +14,32 @@ class BulletFan : public State {
 		void finishCall(Bullet *b);
 		
 	private:
-		double mAngle;
+		struct Fan {
+			double mMinAngle;
+			double mMaxAngle;
+			
+			double mBaseSpeed;
+			int mCount;
+			int mFanCount;
+			
+			double mInterval;
+			
+			bool mIsStraight;
+			bool mInheritVel;
+			
+			double computeComplexity();
+		};
+		
+		typedef std::vector<Fan> FanVec;
+		
+		FanVec mFans;
+		int mBulletSum;
+		
+		/*double mAngle;
 		double mBaseSpeed;
 		int mCount;
 		
-		bool mInheritVel;
+		bool mInheritVel;*/
 };
 
 #endif

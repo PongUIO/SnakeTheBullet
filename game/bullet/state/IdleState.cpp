@@ -1,16 +1,23 @@
 #include "IdleState.h"
 #include "../bullet.h"
 
-IdleState::IdleState(bool endDeath): mDie(endDeath)
+IdleState::IdleState(bool endDeath, bool startup): mDie(endDeath), mStartup(startup)
 {}
+
+
+void IdleState::activate(Bullet* b)
+{
+}
 
 
 void IdleState::generate(double cplx)
 {
 	if(mDie)
 		duration = mdBullet::drandi(3.5, 9.5);
+	else if(mStartup)
+		duration = mdBullet::drandi(3.5,5.0);
 	else
-		duration = mdBullet::drandi(2, 3);
+		duration = mdBullet::drandi(3, 4);
 }
 
 
