@@ -64,7 +64,7 @@ void mdPlayer::process(double delta)
 		x = 0;
 		y = 0;
 		if(l <= 0) printf("death\n");
-	}
+	} 
 	if(modItem.checkCollision(x,y,phb*1.5)) score();
 }
 

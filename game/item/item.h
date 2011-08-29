@@ -12,7 +12,7 @@ class Item {
 		void process(double delta);
 		void draw();
 		
-		bool checkCollision(double tx, double ty, double size2);
+		bool checkCollision(double tx, double ty, double size2); 
 		
 		bool isDead() { return toDie; }
 		void kill() { toDie=true; }
