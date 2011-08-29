@@ -42,6 +42,9 @@ class Bullet {
 		double x,y;
 		double vx, vy;
 		
+		double rang, racc;
+		double rhalt;
+		
 		double fparam[4];
 		double iparam[4];
 		

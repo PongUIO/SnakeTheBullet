@@ -48,7 +48,7 @@ add_executable(SnakeTheBullet
 	game/bullet/state/CircleSpawn.cpp
 	game/bullet/state/BulletFan.cpp
 	game/bullet/state/MoveRandom.cpp
-	game/bullet/state/SeekPoint.cpp
+	game/bullet/state/ChangeMove.cpp
 	game/bullet/state/IdleState.cpp
 	
 	game/controller/controller.cpp

@@ -1,9 +1,9 @@
-#ifndef SEEKPOINT_H
-#define SEEKPOINT_H
+#ifndef CHANGEMOVE_H
+#define CHANGEMOVE_H
 
 #include "../bstate.h"
 
-class SeekPoint : public State {
+class ChangeMove : public State {
 	public:
 		double computeComplexity(double prev);
 		void generate(double cplx);
@@ -13,10 +13,16 @@ class SeekPoint : public State {
 		void finishCall(Bullet *b);
 		
 	private:
-		double mTargetX, mTargetY;
-		double mSpeed;
+		double mAngleOff;
+		double mSpdOff;
+		double mFullTime;
 		
-		bool mSeekRandom;
+		enum Style {
+			AlterSpeed = 	(1<<0),
+			AlterAngle = 	(1<<1),
+		};
+		
+		int mStyle;
 };
 
 #endif

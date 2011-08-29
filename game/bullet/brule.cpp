@@ -8,7 +8,7 @@
 #include "state/IdleState.h"
 #include "state/BulletFan.h"
 #include "state/MoveRandom.h"
-#include "state/SeekPoint.h"
+#include "state/ChangeMove.h"
 
 #include <GL/glext.h>
 
@@ -62,8 +62,7 @@ void BulletRule::generate(double complexity)
 	mComplexity = 0.0;
 	mLength = 0.0;
 	
-	// Append a final state that does nothing
-	State *state = new IdleState(false);
+	State *state = new IdleState(false,true);
 	state->setup(0.0);
 	mStateVec.push_back( state );
 	mLength += mStateVec.back()->duration;
@@ -85,7 +84,7 @@ void BulletRule::generate(double complexity)
 	}
 	
 	// Append a final state that does nothing
-	state = new IdleState(true);
+	state = new IdleState(true,false);
 	state->setup(0.0);
 	mStateVec.push_back( state );
 	mLength += mStateVec.back()->duration;
@@ -109,10 +108,10 @@ State *BulletRule::constructState(double idealComplexity)
 		
 		switch(type)
 		{
-			case SwIdleRule: state = new IdleState(false); break;
+			case SwIdleRule: state = new IdleState(false,false); break;
 			case SwCircleSpawn: state = new CircleSpawn(); break;
 			case SwMoveRandom: state = new MoveRandom(); break;
-			case SwSeekPoint: state = new SeekPoint(); break;
+			case SwChangeMove: state = new ChangeMove(); break;
 			case SwFan: state = new BulletFan(); break;
 		}
 		state->setup(idealComplexity);
