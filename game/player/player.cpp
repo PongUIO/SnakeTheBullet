@@ -15,15 +15,16 @@ void mdPlayer::shutdown()
 void mdPlayer::startup()
 {
 	x = y = 0;
-	ph = pw = 0.15;
-	phb = 0.02;
+	ph = pw = 0.1;
+	phb = 0.01;
+	km = 0.7;
 	s = 0;
 	l = 5;
 }
 
 void mdPlayer::score()
 {
-	printf("item get\n");
+	printf("item get\n score: %d", s);
 	int g = 1.01;
 	phb = phb*g;
 	ph = ph*g;
@@ -48,10 +49,9 @@ void mdPlayer::input( SDL_Event *event )
 
 void mdPlayer::process(double delta)
 {
-	double km = 1;
-	if(kct) km = 0.5;
-	if(ksh) km = 1.5;
-	if(kalt) km = 2;
+	if(kct) km = km*0.5;
+	if(ksh) km = km*1.5;
+	if(kalt) km = km*2;
 	if(kup && y+phb*0.5 <= 0.99) y += delta*km;
 	if(kdown && y-phb*0.5>= -1) y -= delta*km;
 	if(kl && x-phb*0.5>=-1) x -= delta*km;
@@ -61,14 +61,16 @@ void mdPlayer::process(double delta)
 		printf("hit\n");
 		--l;
 		printf("%d \n", l);
-		x = y = 0;
+		x = 0;
+		y = 0;
 		if(l <= 0) printf("death\n");
 	}
-//	if(modItem.checkCollision(x,y,phb*1.5)) score();
+	if(modItem.checkCollision(x,y,phb*1.5)) score();
 }
 
 void mdPlayer::draw()
 {
+	glLoadIdentity();
 	glTranslatef(x-(pw*0.5),y-(ph*0.5),0);//becoming scheeme code
 	glBegin(GL_QUADS);
 		glColor3f(1.0,1.0,1.0);

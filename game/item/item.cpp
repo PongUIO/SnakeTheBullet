@@ -19,7 +19,7 @@ Item::Item(double nx, double ny)
 {
 	x = nx;
 	y = ny;
-	draw();
+	toDie = false;
 }
 
 void mdItem::create(double nx, double ny)
@@ -30,7 +30,7 @@ void mdItem::create(double nx, double ny)
 
 void Item::draw()
 {
-	double d = 0.2;
+	double d = 0.02;
 	glLoadIdentity();
 	glTranslatef(x,y,0);
 	glBegin(GL_QUADS);
@@ -44,9 +44,11 @@ void Item::draw()
 }
 
 
-bool Item::checkCollision(double tx, double ty, double size)
+bool Item::checkCollision(double tx, double ty, double size2)
 {
-	
+	double dist2 = (tx-x)*(tx-x) + (ty-y)*(ty-y);
+	if(dist2 < size2)
+		modItem.hasCol = true;
 }
 
 void mdItem::startup()
@@ -61,7 +63,9 @@ void mdItem::shutdown()
 
 bool mdItem::checkCollision(double tx, double ty, double size)
 {
-	
+	hasCol=false;
+	factoryCall( boost::bind(&Item::checkCollision, _1, tx, ty, size*size) );
+	return hasCol;
 }
 
 void mdItem::process(double delta)
