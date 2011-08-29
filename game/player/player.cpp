@@ -3,17 +3,32 @@
 #include <stdio.h>
 #include "player.h"
 #include "../bullet/bullet.h"
+#include "../item/item.h"
 
 class mdPlayer modPlayer;
 
 void mdPlayer::shutdown()
 {
+	printf("%d", s);
 }
 
 void mdPlayer::startup()
 {
 	x = y = 0;
-	h = w = 0.15;
+	ph = pw = 0.15;
+	phb = 0.02;
+	s = 0;
+	l = 5;
+}
+
+void mdPlayer::score()
+{
+	printf("item get\n");
+	int g = 1.01;
+	phb = phb*g;
+	ph = ph*g;
+	pw = pw*g;
+	++s;
 }
 
 
@@ -37,34 +52,39 @@ void mdPlayer::process(double delta)
 	if(kct) km = 0.5;
 	if(ksh) km = 1.5;
 	if(kalt) km = 2;
-	if(kup && y+h*0.5 <= 0.99) y += delta*km;
-	if(kdown && y-h*0.5>= -1) y -= delta*km;
-	if(kl && x-w*0.5>=-1) x -= delta*km;
-	if(kr && x+w*0.5 <=0.99) x += delta*km;
-	if(modBullet.checkCollision(x,y,0.02)) {//first bracket if in file
+	if(kup && y+ph*0.5 <= 0.99) y += delta*km;
+	if(kdown && y-ph*0.5>= -1) y -= delta*km;
+	if(kl && x-pw*0.5>=-1) x -= delta*km;
+	if(kr && x+pw*0.5 <=0.99) x += delta*km;
+	if(modBullet.checkCollision(x,y,phb)) //first bracket if in file
+	{
 		printf("hit\n");
+		--l;
+		printf("%d \n", l);
+		x = y = 0;
+		if(l <= 0) printf("death\n");
 	}
+//	if(modItem.checkCollision(x,y,phb*1.5)) score();
 }
 
 void mdPlayer::draw()
 {
-	glTranslatef(x-(w*0.5),y-(h*0.5),0);//becoming scheeme code
+	glTranslatef(x-(pw*0.5),y-(ph*0.5),0);//becoming scheeme code
 	glBegin(GL_QUADS);
 		glColor3f(1.0,1.0,1.0);
 		glVertex2f( 0, 0 );
-		glVertex2f( h, 0 );
-		glVertex2f( h, w );
-		glVertex2f( 0, w );
+		glVertex2f( ph, 0 );
+		glVertex2f( ph, pw );
+		glVertex2f( 0, pw );
 	glEnd(); 
 	//test hitboxpolygon
-	//glLoadIdentity();
-	glTranslatef(w*0.5-0.01, h*0.5-0.01, 0.0);
+	glTranslatef(pw*0.5-0.01, ph*0.5-0.01, 0.0);
 	glBegin(GL_QUADS);
 		glColor3f(1.0,0.0,0.0);
 		glVertex2f( 0, 0 );
-		glVertex2f( 0.02, 0 );
-		glVertex2f( 0.02, 0.02 );
-		glVertex2f( 0, 0.02);
+		glVertex2f( phb, 0 );
+		glVertex2f( phb, phb );
+		glVertex2f( 0, phb);
 	glEnd(); 
 }
 

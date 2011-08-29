@@ -18,8 +18,10 @@ class mdPlayer : public Module {
 		//@}
 		
 	private:
+		void score();
 		double x,y;
-		double h,w;
+		double ph,pw,phb;
+		int s,l;
 		bool kup, kdown, kl, kr; 
 		bool kct, ksh, kalt;
 };

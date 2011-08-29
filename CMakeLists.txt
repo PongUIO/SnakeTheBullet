@@ -41,6 +41,8 @@ add_executable(SnakeTheBullet
 	
 	game/player/player.cpp
 	
+	game/item/item.cpp
+
 	game/bullet/bullet.cpp
 	game/bullet/brule.cpp
 	game/bullet/state/CircleSpawn.cpp
