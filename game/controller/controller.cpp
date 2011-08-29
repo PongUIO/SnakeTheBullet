@@ -2,6 +2,7 @@
 
 #include "controller.h"
 #include "../bullet/bullet.h"
+#include "../item/item.h"
 
 class mdController modController;
 
@@ -66,6 +67,11 @@ void mdController::nextPhase()
 		double baseAngle = mdBullet::drandi(0.0, 2.0*PI);
 		
 		cplxShare -= numBullets * rule->getComplexity();
+		
+		int numi = mdBullet::random(1,1+log(1+mCurComplexity/500.0));
+		while( (numi--) ) {
+			modItem.create(mdBullet::drandi(-0.9, 0.9), mdBullet::drandi(-0.9,0.9));
+		}
 		
 		double bS = mdBullet::drandi(0.1,0.2);
 		
