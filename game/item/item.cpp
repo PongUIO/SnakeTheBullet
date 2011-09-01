@@ -80,6 +80,6 @@ void mdItem::draw()
 	factoryCall( boost::bind(&Item::draw, _1) );
 }
 
-mdItem::mdItem() : Factory()
+mdItem::mdItem() : Factory<Item>()
 {}	
 	
