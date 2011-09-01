@@ -29,3 +29,4 @@ class mdPlayer : public Module {
 extern class mdPlayer modPlayer;
 
 #endif
+	

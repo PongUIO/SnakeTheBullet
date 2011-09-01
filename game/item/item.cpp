@@ -23,7 +23,10 @@ Item::Item(double nx, double ny)
 }
 
 void mdItem::create(double nx, double ny)
-{}
+{
+	Item *obj = new Item(nx, ny);
+	addObj(obj);
+}
 
 void Item::draw()
 {
