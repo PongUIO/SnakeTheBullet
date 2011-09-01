@@ -158,7 +158,7 @@ bool Bullet::checkCollision(double tx, double ty, double size2)
 // mdBullet
 //
 //
-mdBullet::mdBullet() : Factory()
+mdBullet::mdBullet() : Factory<Bullet>()
 {}
 
 mdBullet::~mdBullet()
@@ -166,7 +166,9 @@ mdBullet::~mdBullet()
 
 void mdBullet::startup()
 {
-	rng.seed(time(0));
+	int seed = time(0);
+	printf("Seed: %d\n", seed);
+	rng.seed(seed); // Try: 535
 }
 
 void mdBullet::shutdown()

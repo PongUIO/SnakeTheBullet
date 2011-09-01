@@ -100,6 +100,7 @@ void mdController::nextPhase()
 			
 			case Side:
 			{
+				numBullets += numBullets%4;
 				double off = mdBullet::drandi(0.0, 0.25);
 				for(int i=0; i<numBullets; i++) {
 					Border &b = borderData[i%4];

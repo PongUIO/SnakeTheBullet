@@ -77,7 +77,7 @@ class mdBullet : public Module, public Factory<Bullet> {
 			void startup();
 			void shutdown();
 			
-			void clearData() { Factory::killAll(); }
+			void clearData() { Factory<Bullet>::killAll(); }
 			
 			void input( SDL_Event *event ) {}
 			void process(double delta);

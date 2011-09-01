@@ -35,7 +35,7 @@ class mdItem : public Module, public Factory<Item> {
 			void startup();
 			void shutdown();
 			
-			void clearData() { Factory::killAll(); }
+			void clearData() { Factory<Item>::killAll(); }
 			
 			void input( SDL_Event *event ) {}
 			void process(double delta);

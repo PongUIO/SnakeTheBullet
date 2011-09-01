@@ -1,9 +1,12 @@
+#define GL_GLEXT_PROTOTYPES
 #include <SDL.h>
 #include <GL/gl.h>
 
 #include "game.h"
 #include "signal.h"
 #include "timer.h"
+
+//#define BLEND
 
 class mdGame modGame;
 
@@ -31,23 +34,32 @@ void mdGame::run()
 			
 			modSignal.process(delta);
 			
+			#ifndef BLEND
 			glClear( GL_COLOR_BUFFER_BIT );
+			#endif
 			
 			glMatrixMode( GL_MODELVIEW);
 			glLoadIdentity();
 			
-			/*glEnable(GL_BLEND);
-			glBlendFunc(GL_ZERO, GL_ONE_MINUS_SRC_ALPHA);
-			glColor4f(0,0,0,0.02);
+			modSignal.draw();
+			
+			glMatrixMode( GL_MODELVIEW);
+			glLoadIdentity();
+			
+			#ifdef BLEND
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_ONE, GL_ONE);
+			glBlendEquation(GL_FUNC_REVERSE_SUBTRACT);
+			double col = 1.0/255.0;
+			glColor3f(col,col,col);
 			glBegin(GL_QUADS);
 				glVertex2f(-1,-1);
 				glVertex2f( 1,-1);
 				glVertex2f( 1, 1);
 				glVertex2f(-1, 1);
 			glEnd();
-			glDisable(GL_BLEND);*/
-			
-			modSignal.draw();
+			glDisable(GL_BLEND);
+			#endif
 			
 			SDL_GL_SwapBuffers();
 		}
