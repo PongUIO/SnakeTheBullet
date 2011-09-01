@@ -20,7 +20,7 @@ class mdPlayer : public Module {
 	private:
 		void score();
 		double x,y,km; 
-		double ph,pw,phb;
+		double ph,pw,phb,pib,pe;
 		int s,l;
 		bool kup, kdown, kl, kr; 
 		bool kct, ksh, kalt;
