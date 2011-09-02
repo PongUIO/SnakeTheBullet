@@ -77,8 +77,8 @@ void mdController::nextPhase()
 #endif
 	mCurPhase++;
 	
-	int numRules1 = mdBullet::random(1, 1 + log(1+mCurComplexity/500.0) );
-	int numRules2 = mdBullet::random(1, 1 + log(1+mCurComplexity/500.0) );
+	int numRules1 = mdBullet::random(1, 1 + log(1+mCurComplexity/400.0) );
+	int numRules2 = mdBullet::random(1, 1 + log(1+mCurComplexity/400.0) );
 	int numRules = numRules1<numRules2 ? numRules1 : numRules2;
 	double maxLength = 0.0;
 	
@@ -190,6 +190,6 @@ void mdController::nextPhase()
 #ifdef USE_PLAYERITEM
 	mNextPhaseTimer = maxLength*0.6 + 1.0;
 #else
-	mNextPhaseTimer = maxLength*0.8 + 1.0;
+	mNextPhaseTimer = maxLength*1.0 + 1.0;
 #endif
 }

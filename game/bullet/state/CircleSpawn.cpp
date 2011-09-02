@@ -4,7 +4,7 @@
 void CircleSpawn::generate(double cplx)
 {
 	mBulletCount = mdBullet::random(2, 4+sqrt(cplx*0.5));
-	mBaseSpeed = mdBullet::drandi(0.005*(1.0+sqrt(cplx)), 0.08*(1.0+0.4*sqrt(cplx)));
+	mBaseSpeed = mdBullet::drandi(0.005*(1.0+sqrt(cplx)), 0.06*(1.0+0.4*sqrt(cplx)));
 	
 	mInstant = mdBullet::random(0,3);
 	mFreeze = mdBullet::random(0,3);
@@ -75,5 +75,5 @@ void CircleSpawn::finishCall(Bullet* b)
 double CircleSpawn::computeComplexity(double prev)
 {	/*double mult = 1.0 * (1.0 + 2.0*mBulletCount*mBaseSpeed);
 	return (1.0+prev) * mult;*/
-	return prev * (mBaseSpeed/0.08) * pow(double(mBulletCount), 1.25);
+	return prev * (mBaseSpeed/0.06) * pow(double(mBulletCount), 1.25);
 }

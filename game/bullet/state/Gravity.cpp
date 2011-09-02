@@ -3,7 +3,7 @@
 
 void Gravity::generate(double cplx)
 {
-	duration = mdBullet::drandi(4.0, 9.0);
+	duration = mdBullet::drandi(3.0, 5.5);
 	
 	mGravAngle = mdBullet::drandi(0.0, PI*2.0);
 	mGravDist = mdBullet::drandi(0.0, 0.5);
@@ -27,8 +27,8 @@ void Gravity::process(Bullet* b, double delta)
 	double Ldot = xL*xL+yL*yL;
 	
 	double dist = sqrt(Ldot);
-	if(dist < 0.1)
-		dist = 0.1;
+	if(dist < 0.15)
+		dist = 0.15;
 	
 	double xDir = xL/dist;
 	double yDir = yL/dist;

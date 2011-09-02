@@ -13,8 +13,8 @@
 
 #include <GL/glext.h>
 
-#define ATTEMPTS 12
-#define STATE_ATTEMPTS 6
+#define ATTEMPTS 16
+#define STATE_ATTEMPTS 9
 
 BulletRule::~BulletRule()
 {
@@ -69,8 +69,15 @@ void BulletRule::generate(double complexity)
 	mLength += mStateVec.back()->duration;
 	
 	int stateCount=0;
+	double complexityMult;
+#ifdef USE_PLAYERITEM
+	complexityMult = 0.3;
+#else
+	complexityMult = 0.1;
+#endif
+	
 	while(mComplexity < complexity && stateCount<numStates) {
-		double stateComplexity = (complexity-mComplexity)/double(numStates-stateCount);
+		double stateComplexity = (complexity-mComplexity)/double(numStates-stateCount)*complexityMult;
 		if(stateComplexity <= 0.0)
 			break;
 		
@@ -165,7 +172,7 @@ void State::setup(double cplx)
 		mScale = 0.01;
 		
 		for(int i=0; i<numFragments; i++) {
-			double size = pow(realCplx / double(i+1), 1.0/6.0);
+			double size = 0.15+pow(realCplx / double(i+1), 1.0/6.0);
 			
 			RenderFragment frag;
 			frag.moveOffset = i==0 ? 0.0 : mdBullet::drandi(0.0, size);

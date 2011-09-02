@@ -109,6 +109,12 @@ void Bullet::process(double delta)
 		
 		vx += cDirX*eMult*delta;
 		vy += cDirY*eMult*delta;
+		
+		double speed = sqrt(vx*vx+vy*vy);
+		if(speed > 0.15) {
+			vx = vx/speed*0.15;
+			vy = vy/speed*0.15;
+		}
 	}
 	
 	x += vx*delta;

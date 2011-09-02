@@ -15,7 +15,7 @@ void IdleState::generate(double cplx)
 	if(mDie)
 		duration = mdBullet::drandi(3.5, 9.5);
 	else if(mStartup)
-		duration = mdBullet::drandi(3.5,5.0);
+		duration = mdBullet::drandi(3.5,4.5);
 	else
 		duration = mdBullet::drandi(3, 4);
 }

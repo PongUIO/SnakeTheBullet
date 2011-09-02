@@ -89,7 +89,7 @@ double BulletFan::Fan::computeComplexity()
 {
 	double straightMult = mIsStraight ? 1.0 : 2.0;
 	
-	double res = (mBaseSpeed/0.08)*pow(mCount,1.25)*straightMult;
+	double res = (mBaseSpeed/0.06)*pow(mCount,1.25)*straightMult;
 	return res;
 }
 
