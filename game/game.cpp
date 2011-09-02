@@ -20,7 +20,7 @@ void mdGame::run()
 	while(!shutdown)
 	{
 		while( SDL_PollEvent( &event ) ) {
-			if( event.type == SDL_QUIT ) {
+			if( event.type == SDL_QUIT || (event.type==SDL_KEYDOWN && event.key.keysym.sym==SDLK_ESCAPE) ) {
 				shutdown = true;
 			} else if(
 				event.type == SDL_KEYDOWN ||
@@ -53,10 +53,10 @@ void mdGame::run()
 			double col = 1.0/255.0;
 			glColor3f(col,col,col);
 			glBegin(GL_QUADS);
-				glVertex2f(-1,-1);
-				glVertex2f( 1,-1);
-				glVertex2f( 1, 1);
-				glVertex2f(-1, 1);
+				glVertex2f(-2,-2);
+				glVertex2f( 2,-2);
+				glVertex2f( 2, 2);
+				glVertex2f(-2, 2);
 			glEnd();
 			glDisable(GL_BLEND);
 			#endif

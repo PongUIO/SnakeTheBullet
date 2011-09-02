@@ -46,7 +46,7 @@ class Bullet {
 		double rhalt;
 		
 		double fparam[4];
-		double iparam[4];
+		int iparam[4];
 		
 		void nextRule() { setRule(activeRuleState+1); }
 	
@@ -91,6 +91,7 @@ class mdBullet : public Module, public Factory<Bullet> {
 		//@}
 		
 		bool hasCol;
+		int seed;
 	private:
 		
 };

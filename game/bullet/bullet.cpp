@@ -166,14 +166,14 @@ mdBullet::~mdBullet()
 
 void mdBullet::startup()
 {
-	int seed = time(0);
-	printf("Seed: %d\n", seed);
+	seed = time(0);
 	rng.seed(seed); // Try: 535
 }
 
 void mdBullet::shutdown()
 {
 	clearData();
+	printf("Seed: %d\n", seed);
 }
 
 bool mdBullet::checkCollision(double tx, double ty, double size)
@@ -194,6 +194,14 @@ void mdBullet::create(const Bullet::Config& config)
 void mdBullet::process(double delta)
 {
 	factoryCall( boost::bind(&Bullet::process, _1, delta) );
+	
+	/*
+	static int lastCount = 0;
+	if( getActive() != lastCount ) {
+		printf("Active bullets: %d\n", getActive());
+		lastCount = getActive();
+	}
+	*/
 }
 
 void mdBullet::draw()
