@@ -30,7 +30,7 @@ int initGtk(int argc, char *argv[])
 	GdkScreen *screen = gtk_window_get_screen(GTK_WINDOW(window));
 	int width = gdk_screen_get_width(screen);
 	int height = gdk_screen_get_height(screen);
-	gtk_window_set_default_size(GTK_WINDOW(window), width/2, height/2);
+	gtk_window_set_default_size(GTK_WINDOW(window), width/1.5, height/1.5);
 	if(fullscreen)
 		gtk_window_fullscreen(GTK_WINDOW(window));
 	

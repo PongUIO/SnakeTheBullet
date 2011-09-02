@@ -33,6 +33,8 @@ void mdGame::runFrame()
 	
 #ifdef FBO
 	mFb.startRender();
+#else
+	glClear(GL_COLOR_BUFFER_BIT);
 #endif
 	
 	modSignal.draw();
@@ -92,7 +94,9 @@ void mdGame::updateScreen(int w, int h)
 	
 	glOrtho(-1,1, -1,1, -1,1);
 	glScalef(double(h)/double(w), 1,1);
-	
+#ifndef USE_PLAYERITEM
+	glScalef(0.75,0.75,1.0);
+#endif
 	glClear(GL_COLOR_BUFFER_BIT);
 }
 

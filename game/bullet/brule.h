@@ -34,6 +34,7 @@ class BulletRule {
 			SwMoveRandom,	// Moves in a random direction (fp0=speed)
 			SwChangeMove,	// Alters the movement of a bullet
 			SwFan,		// Creates a fan of bullets over time (fp0=target angle)
+			SwGravity,
 			
 			MaxSwitch
 		};

@@ -3,7 +3,6 @@
 #include "controller.h"
 #include "../bullet/bullet.h"
 #include "../item/item.h"
-#include <../../media/data/Other/Projects/Danmaku/public/src/core/misc/misc.h>
 
 class mdController modController;
 
@@ -17,6 +16,16 @@ void mdController::startup()
 	mCurComplexity = 250.0;
 	mItemSpawnTimer = 0.0;
 	mCurPhase = 0;
+	
+	mStyleWeight[Circle] = 1.0;
+	mStyleWeight[MultiCircle] = 0.5;
+	mStyleWeight[Side] = 0.1;
+	
+	mStyleWeightMax = 0.0;
+	for(int i=0; i<StyleMax; i++) {
+		mStyleWeightMax += mStyleWeight[i];
+	}
+	
 	nextPhase();
 }
 
@@ -64,11 +73,13 @@ void mdController::nextPhase()
 #ifdef USE_PLAYERITEM
 	mCurComplexity += 25.0 + 0.035*mCurComplexity;
 #else
-	mCurComplexity = mdBullet::drandi(100.0, 5000.0);
+	mCurComplexity = mdBullet::drandi(100.0, 7500.0);
 #endif
 	mCurPhase++;
 	
-	int numRules = mdBullet::random(1, 1 + log(1+mCurComplexity/200.0) );
+	int numRules1 = mdBullet::random(1, 1 + log(1+mCurComplexity/500.0) );
+	int numRules2 = mdBullet::random(1, 1 + log(1+mCurComplexity/500.0) );
+	int numRules = numRules1<numRules2 ? numRules1 : numRules2;
 	double maxLength = 0.0;
 	
 	double cplxShare = mCurComplexity;
@@ -92,11 +103,26 @@ void mdController::nextPhase()
 		
 		double bS = mdBullet::drandi(0.1,0.2);
 		
-		switch( mdBullet::random(0, StyleMax-1) )
+		double styleVal = mdBullet::drandi(0.0, mStyleWeightMax);
+		GenStyle style = GenStyle(0);
+		while(styleVal >= 0.0) {
+			if(style >= StyleMax || styleVal < mStyleWeight[style])
+				break;
+			
+			styleVal -= mStyleWeight[style];
+			style = GenStyle(style+1);
+		}
+		if(style >= StyleMax)
+			style = Circle;
+		
+		if( style == MultiCircle && numBullets<12)
+			style = Circle;
+		
+		switch( style )
 		{
 			case Circle:
 				for(int i=0; i<numBullets; i++) {
-					double angle = baseAngle + double(i)/double(numBullets) * 3.1415*2.0;
+					double angle = baseAngle + double(i)/double(numBullets) * PI*2.0;
 					modBullet.create(
 						Bullet::Config(
 							cos(angle)*sqrt(2), sin(angle)*sqrt(2),
@@ -105,6 +131,34 @@ void mdController::nextPhase()
 						)
 					);
 				}
+				break;
+			
+			case MultiCircle:
+			{
+				int numCircle = mdBullet::random(2,4);
+				double circDist = mdBullet::drandi(0.01, 0.05);
+				
+				int circBullets = (numBullets + numBullets%numCircle)/numCircle;
+				
+				bS *= 0.5;
+				double cD = mdBullet::drandi(0.25,0.5);
+				
+				for(int c=0; c<numCircle; c++) {
+					double circAngle = baseAngle*baseAngle + double(c)/double(numCircle) * PI*2.0;
+					
+					for(int i=0; i<circBullets; i++) {
+						double angle = baseAngle + double(i)/double(circBullets) * PI*2.0;
+						//inAngle = circAngle+angle + PI;
+						modBullet.create(
+						Bullet::Config(
+							cos(angle)*cD + cos(circAngle)*sqrt(circDist), sin(angle)*cD + sin(circAngle)*sqrt(circDist),
+							cos(circAngle+inAngle)*bS, sin(circAngle+inAngle)*bS,
+							rule
+						)
+					);
+					}
+				}
+			}
 				break;
 			
 			case Side:

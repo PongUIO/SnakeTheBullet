@@ -9,6 +9,7 @@
 #include "state/BulletFan.h"
 #include "state/MoveRandom.h"
 #include "state/ChangeMove.h"
+#include "state/Gravity.h"
 
 #include <GL/glext.h>
 
@@ -113,6 +114,7 @@ State *BulletRule::constructState(double idealComplexity)
 			case SwMoveRandom: state = new MoveRandom(); break;
 			case SwChangeMove: state = new ChangeMove(); break;
 			case SwFan: state = new BulletFan(); break;
+			case SwGravity: state = new Gravity(); break;
 		}
 		state->setup(idealComplexity);
 		
@@ -163,7 +165,7 @@ void State::setup(double cplx)
 		mScale = 0.01;
 		
 		for(int i=0; i<numFragments; i++) {
-			double size = sqrt(sqrt(realCplx / double(i+1)));
+			double size = pow(realCplx / double(i+1), 1.0/6.0);
 			
 			RenderFragment frag;
 			frag.moveOffset = i==0 ? 0.0 : mdBullet::drandi(0.0, size);
@@ -247,4 +249,4 @@ void State::setup(double cplx)
  * Calculates the ideal number of rules for a given complexity.
  */
 int BulletRule::calcNumRules(double complexity)
-{	return mdBullet::random(1, 3+log(1+pow(complexity,1.0)) ); }
+{	return mdBullet::random(1, 3+log(1+pow(complexity,1.5)) ); }

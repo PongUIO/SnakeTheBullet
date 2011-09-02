@@ -89,6 +89,7 @@ add_executable(SnakeTheBullet
 	game/bullet/state/MoveRandom.cpp
 	game/bullet/state/ChangeMove.cpp
 	game/bullet/state/IdleState.cpp
+	game/bullet/state/Gravity.cpp
 	
 	game/controller/controller.cpp
 	)

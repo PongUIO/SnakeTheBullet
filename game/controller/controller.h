@@ -25,10 +25,14 @@ class mdController : public Module {
 		
 		enum GenStyle {
 			Circle,
-			Side, 
+			MultiCircle,
+			Side,
 			
 			StyleMax
 		};
+		
+		double mStyleWeight[StyleMax];
+		double mStyleWeightMax;
 		
 		double mCurComplexity;
 		double mNextPhaseTimer;

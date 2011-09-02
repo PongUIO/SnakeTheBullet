@@ -16,18 +16,18 @@ void ChangeMove::generate(double cplx)
 		mStyle |= AlterAngle;
 	// 10% Effective chance of both
 		
-	duration = mdBullet::drandi(0.5, 2.0);
-	mFullTime = duration + mdBullet::drandi(2.0, 10.0);
+	duration = mdBullet::drandi(0.5, 3.0);
+	mFullTime = duration + mdBullet::drandi(2.0, 20.0);
 	
 	if(mStyle & AlterSpeed) {
-		mSpdOff = mdBullet::drandi(0.005*sqrt(cplx), 0.015*sqrt(cplx))*0.1/duration;
+		mSpdOff = mdBullet::drandi(0.003*sqrt(cplx), 0.018*sqrt(cplx))*0.1/duration;
 		mSpdOff = mdBullet::random(0,1) ? -mSpdOff : mSpdOff;
 		mFullTime *= 0.25;
 	} else
 		mSpdOff = 0.0;
 	
 	if(mStyle & AlterAngle)
-		mAngleOff = mdBullet::drandi(-PI,PI)/duration * 1.5;
+		mAngleOff = mdBullet::drandi(-PI,PI) * 1.25;
 	else
 		mAngleOff = 0.0;
 }

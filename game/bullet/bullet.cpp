@@ -98,6 +98,19 @@ void Bullet::process(double delta)
 		}
 	}
 	
+	double cDist2 = x*x+y*y;
+	static const double edgeDist = sqrt(2.2);
+	if(cDist2 > edgeDist*edgeDist) {
+		double dist = cDist2;
+		double cDirX = -x/dist;
+		double cDirY = -y/dist;
+		
+		double eMult = (dist-edgeDist)*0.1;
+		
+		vx += cDirX*eMult*delta;
+		vy += cDirY*eMult*delta;
+	}
+	
 	x += vx*delta;
 	y += vy*delta;
 }
