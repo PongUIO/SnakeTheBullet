@@ -35,7 +35,7 @@ BulletRule* BulletRule::designRule(double complexity)
 		BulletRule *rule = new BulletRule();
 		
 		rule->generate(complexity);
-		printf("\tComplexity: %g\n", rule->getComplexity());
+		//printf("\tComplexity: %g\n", rule->getComplexity());
 		
 		if(best == NULL)
 			best = rule;
@@ -50,8 +50,8 @@ BulletRule* BulletRule::designRule(double complexity)
 			break;
 	}
 	
-	printf("Best rule: %g (ideal %g)\n", best->getComplexity(), complexity);
-	printf("Rule state size: %d\n", best->mStateVec.size());
+	//printf("Best rule: %g (ideal %g)\n", best->getComplexity(), complexity);
+	//printf("Rule state size: %d\n", best->mStateVec.size());
 	
 	return best;
 }

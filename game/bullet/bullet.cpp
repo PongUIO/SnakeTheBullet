@@ -115,9 +115,6 @@ void Bullet::draw()
 	glBindBuffer(GL_ARRAY_BUFFER, cur->bufferGl[0]);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, cur->bufferGl[1]);
 	
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_COLOR_ARRAY);
-	
 	glVertexPointer(2, GL_FLOAT, sizeof(BulletRule::Vertex), 0);
 	glColorPointer(3, GL_FLOAT, sizeof(BulletRule::Vertex), BUFFER_OFFSET(sizeof(GLfloat)*2));
 	
@@ -132,9 +129,6 @@ void Bullet::draw()
 	
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	
-	glDisableClientState(GL_VERTEX_ARRAY);
-	glDisableClientState(GL_COLOR_ARRAY);
 }
 
 void Bullet::setRule(int r)
@@ -206,5 +200,11 @@ void mdBullet::process(double delta)
 
 void mdBullet::draw()
 {
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_COLOR_ARRAY);
+	
 	factoryCall( boost::bind(&Bullet::draw, _1) );
+	
+	glDisableClientState(GL_VERTEX_ARRAY);
+	glDisableClientState(GL_COLOR_ARRAY);
 }

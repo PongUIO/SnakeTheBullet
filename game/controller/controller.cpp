@@ -3,6 +3,7 @@
 #include "controller.h"
 #include "../bullet/bullet.h"
 #include "../item/item.h"
+#include <../../media/data/Other/Projects/Danmaku/public/src/core/misc/misc.h>
 
 class mdController modController;
 
@@ -35,7 +36,12 @@ void mdController::process(double delta)
 	if(mItemSpawnTimer <= 0.0) {
 		int numi = mdBullet::random(1,1+log(1+mCurComplexity/500.0));
 		while( (numi--) ) {
-			modItem.create(mdBullet::drandi(-0.9, 0.9), mdBullet::drandi(-0.9,0.9));
+			double x,y;
+			x = mdBullet::drandi(-0.9, 0.9);
+			y = mdBullet::drandi(-0.9,0.9);
+#ifdef USE_PLAYERITEM
+			modItem.create(x,y);
+#endif
 		}
 		mItemSpawnTimer = mNextPhaseTimer+1;
 	}
@@ -55,7 +61,11 @@ struct Border {
 
 void mdController::nextPhase()
 {
+#ifdef USE_PLAYERITEM
 	mCurComplexity += 25.0 + 0.035*mCurComplexity;
+#else
+	mCurComplexity = mdBullet::drandi(100.0, 5000.0);
+#endif
 	mCurPhase++;
 	
 	int numRules = mdBullet::random(1, 1 + log(1+mCurComplexity/200.0) );
@@ -75,7 +85,6 @@ void mdController::nextPhase()
 		mItemSpawnTimer = mdBullet::drandi(mNextPhaseTimer*0.3, mNextPhaseTimer*0.7);
 		
 		int numBullets = cShare / rule->getComplexity();
-		printf("%d\n", numBullets);
 		double inAngle = mdBullet::drandi(PI - PI/12.0, PI + PI/12.0);
 		double baseAngle = mdBullet::drandi(0.0, 2.0*PI);
 		
@@ -117,12 +126,16 @@ void mdController::nextPhase()
 				break;
 		}
 		
-		printf("Share complexity: %g\n", numBullets*rule->getComplexity());
-		printf("Duration: %g\n", rule->getLength());
+		//printf("Share complexity: %g\n", numBullets*rule->getComplexity());
+		//printf("Duration: %g\n", rule->getLength());
 	}
 	printf("Total complexity: %g / %g\n", mCurComplexity-cplxShare, mCurComplexity);
 	printf("Current phase: %d\n", mCurPhase);
 	printf("\n");
 	
+#ifdef USE_PLAYERITEM
 	mNextPhaseTimer = maxLength*0.6 + 1.0;
+#else
+	mNextPhaseTimer = maxLength*0.8 + 1.0;
+#endif
 }

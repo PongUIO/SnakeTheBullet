@@ -7,9 +7,13 @@
 
 struct ModuleDefinition ModuleData[] =
 {
+#ifdef USE_PLAYERITEM
 	{ &modPlayer },
+#endif
 	{ &modBullet },
 	{ &modController },
+#ifdef USE_PLAYERITEM
 	{ &modItem},
+#endif
 	{ 0 },
 };

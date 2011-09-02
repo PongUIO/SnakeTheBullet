@@ -6,19 +6,64 @@
 #include "signal.h"
 #include "timer.h"
 
-//#define BLEND
-
 class mdGame modGame;
+
+void mdGame::init()
+{
+#ifdef FBO
+	mFb.init(scrWidth,scrHeight);
+	mFb.clearTextures();
+#endif
+	
+	mTimer.reset_timer();
+}
+
+void mdGame::runFrame()
+{
+#ifdef DELTATIME
+	double delta = DELTATIME;
+#else
+	double delta = 0.01;
+#endif
+	
+	modSignal.process(delta);
+	
+	glMatrixMode( GL_MODELVIEW);
+	glLoadIdentity();
+	
+#ifdef FBO
+	mFb.startRender();
+#endif
+	
+	modSignal.draw();
+	
+#ifdef FBO
+	mFb.endRender();
+#endif
+	
+	glMatrixMode( GL_MODELVIEW);
+	glLoadIdentity();
+	
+#ifdef FBO
+	mFb.screenBlit();
+#endif
+	
+#ifndef SCREENSAVER
+	SDL_GL_SwapBuffers();
+#endif
+}
+
 
 void mdGame::run()
 {
 	SDL_Event event;
 	
-	mTimer.reset_timer();
+	init();
 	
 	bool shutdown = false;
 	while(!shutdown)
 	{
+#ifndef SCREENSAVER
 		while( SDL_PollEvent( &event ) ) {
 			if( event.type == SDL_QUIT || (event.type==SDL_KEYDOWN && event.key.keysym.sym==SDLK_ESCAPE) ) {
 				shutdown = true;
@@ -28,40 +73,26 @@ void mdGame::run()
 				modSignal.input( &event );
 			}
 		}
+#endif
 		
 		if(mTimer.get_timer()>0) {
-			double delta = 0.01;
-			
-			modSignal.process(delta);
-			
-			#ifndef BLEND
-			glClear( GL_COLOR_BUFFER_BIT );
-			#endif
-			
-			glMatrixMode( GL_MODELVIEW);
-			glLoadIdentity();
-			
-			modSignal.draw();
-			
-			glMatrixMode( GL_MODELVIEW);
-			glLoadIdentity();
-			
-			#ifdef BLEND
-			glEnable(GL_BLEND);
-			glBlendFunc(GL_ONE, GL_ONE);
-			glBlendEquation(GL_FUNC_REVERSE_SUBTRACT);
-			double col = 1.0/255.0;
-			glColor3f(col,col,col);
-			glBegin(GL_QUADS);
-				glVertex2f(-2,-2);
-				glVertex2f( 2,-2);
-				glVertex2f( 2, 2);
-				glVertex2f(-2, 2);
-			glEnd();
-			glDisable(GL_BLEND);
-			#endif
-			
-			SDL_GL_SwapBuffers();
+			runFrame();
 		}
 	}
 }
+
+void mdGame::updateScreen(int w, int h)
+{
+	scrWidth = w;
+	scrHeight = h;
+	
+	glViewport(0,0,w,h);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	
+	glOrtho(-1,1, -1,1, -1,1);
+	glScalef(double(h)/double(w), 1,1);
+	
+	glClear(GL_COLOR_BUFFER_BIT);
+}
+

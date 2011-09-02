@@ -9,7 +9,11 @@
 // Global includes
 #include <time.h>
 
+#ifdef FPS_DEF
+#define TIMER_SPEED FPS_DEF
+#else
 #define TIMER_SPEED 100
+#endif
 
 /// Timer module. Handles timer related stuff
 class cmTimer {
