@@ -39,8 +39,8 @@ static const char *fBlendShader =
 "vec4 getColor() { return texture2D(srcTex, gl_TexCoord[0].st); }\n"
 #endif
 "void main() {\n"
-" vec4 srcColor = texture2D(srcTex, gl_TexCoord[0].st);\n"
-" gl_FragColor = getColor() - vec4(1.0/" XSTR(TRAILPOWER) ");\n"
+" vec4 col = getColor();\n"
+" gl_FragColor = col - vec4(1.0/" XSTR(TRAILPOWER) ");\n"
 "}"
 ;
 
