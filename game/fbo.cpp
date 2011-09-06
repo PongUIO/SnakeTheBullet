@@ -93,6 +93,14 @@ void FrameBuffer::init(int w, int h, double blurScale)
 	for(int i=0; i<TextureMax; i++) {
 		glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT+i,
 			GL_TEXTURE_2D, renderTex[i], 0);
+		
+		GLenum status = glGetError();
+		#define PERR(x) case x: printf(#x "\n"); break;
+		switch(status) {
+			PERR(GL_INVALID_ENUM)
+			PERR(GL_INVALID_VALUE)
+			PERR(GL_INVALID_OPERATION)
+		}
 	}
 	
 	GLenum status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
