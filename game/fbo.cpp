@@ -72,12 +72,10 @@ void FrameBuffer::init(int w, int h, double blurScale)
 	for(int i=0; i<TextureMax; i++) {
 		glBindTexture(GL_TEXTURE_2D, renderTex[i]);
 		
-		if(strstr((const char*)glGetString(GL_EXTENSIONS), "texture_float")!=0) {
+		if(strstr((const char*)glGetString(GL_EXTENSIONS), "texture_float")!=0)
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, texSize,texSize, 0, GL_RGB, GL_FLOAT, NULL);
-		} else {
-			printf("Half float\n");
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, texSize,texSize, 0, GL_RGB, GL_FLOAT, NULL);
-		}
+		else
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16, texSize,texSize, 0, GL_RGB, GL_UNSIGNED_SHORT, NULL);
 		GLenum status = glGetError();
 		#define PERR(x) case x: printf(#x "\n"); break;
 		switch(status) {
