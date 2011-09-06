@@ -122,10 +122,11 @@ void startup(int argc, char *argv[]) {
 	SDL_Init( SDL_INIT_VIDEO );
 	
 	const SDL_VideoInfo *info = SDL_GetVideoInfo();
-	int size = info->current_h<info->current_w ? info->current_h : info->current_w;
-	size = double(size)*0.85;
-	SDL_Surface *sdlScreen = SDL_SetVideoMode(size,size,0, SDL_OPENGL);
-	init_GL(size,size);
+	//int size = info->current_h<info->current_w ? info->current_h : info->current_w;
+	//size = double(size)*0.85;
+	int w=info->current_w, h=info->current_h;
+	SDL_Surface *sdlScreen = SDL_SetVideoMode(w,h,0, SDL_OPENGL | SDL_FULLSCREEN);
+	init_GL(w,h);
 #endif
 	
 	mTimer.setup();
