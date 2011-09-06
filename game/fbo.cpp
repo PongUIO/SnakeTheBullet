@@ -78,6 +78,14 @@ void FrameBuffer::init(int w, int h, double blurScale)
 			printf("Half float\n");
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, texSize,texSize, 0, GL_RGB, GL_FLOAT, NULL);
 		}
+		GLenum status = glGetError();
+		#define PERR(x) case x: printf(#x "\n"); break;
+		switch(status) {
+			PERR(GL_INVALID_ENUM)
+			PERR(GL_INVALID_VALUE)
+			PERR(GL_INVALID_OPERATION)
+		}
+		#undef PERR
 		
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
