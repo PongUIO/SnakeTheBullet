@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include <math.h>
 
 #include "fbo.h"
@@ -71,7 +72,12 @@ void FrameBuffer::init(int w, int h, double blurScale)
 	for(int i=0; i<TextureMax; i++) {
 		glBindTexture(GL_TEXTURE_2D, renderTex[i]);
 		
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, texSize,texSize, 0, GL_RGB, GL_FLOAT, NULL);
+		if(strstr((const char*)glGetString(GL_EXTENSIONS), "texture_float")!=0) {
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, texSize,texSize, 0, GL_RGB, GL_FLOAT, NULL);
+		} else {
+			printf("Half float\n");
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, texSize,texSize, 0, GL_RGB, GL_FLOAT, NULL);
+		}
 		
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
