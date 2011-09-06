@@ -3,6 +3,7 @@
 
 #include "../factory.h"
 #include "../module.h"
+#include <time.h>
 
 class Item {
 	public:
@@ -20,6 +21,9 @@ class Item {
 		double x,y;
 		
 		bool toDie;
+		
+	private:
+		double it, g;
 		
 };
 
@@ -43,6 +47,11 @@ class mdItem : public Module, public Factory<Item> {
 		//@}
 		
 		bool hasCol;
+		
+		
+		
+		bool ig;
+		bool itb;
 	private:
 		
 };

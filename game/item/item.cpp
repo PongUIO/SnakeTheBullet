@@ -12,7 +12,14 @@ class mdItem modItem;
 
 void Item::process(double delta)
 {
+	if(modItem.ig) 
+		{y -= delta*g; printf("falling? %g \n", y);}
 
+	if(y >= 1) 
+		kill();
+
+	if ((it -= delta) <= 0 && modItem.itb) 
+		{kill(); printf("time: %g \n", it);}
 }
 
 Item::Item(double nx, double ny)
@@ -20,6 +27,8 @@ Item::Item(double nx, double ny)
 	x = nx;
 	y = ny;
 	toDie = false;
+	it = 15;
+	g = 0.05;
 }
 
 void mdItem::create(double nx, double ny)
@@ -55,7 +64,8 @@ bool Item::checkCollision(double tx, double ty, double size2)
 
 void mdItem::startup()
 {
-	
+	itb = true;
+	ig = true;
 }
 
 void mdItem::shutdown()
@@ -73,6 +83,7 @@ bool mdItem::checkCollision(double tx, double ty, double size)
 void mdItem::process(double delta)
 {
 	
+	factoryCall(boost::bind(&Item::process, _1, delta));
 }
 
 void mdItem::draw()
