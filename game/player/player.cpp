@@ -23,10 +23,10 @@ void mdPlayer::startup()
 
 void mdPlayer::score()
 {
-	printf("item get\n score: %d", ++s);
-	int g = 1.01;
+	printf("item get\n score: %d \n", s += 100);
+	int g = 1.10*(1+pe);
 	phb = phb*g;
-	pib = -pib*g;
+	pib = -pib*-g;
 	ph = ph*g;
 	pw = pw*g;
 	pe = pe*g;
@@ -54,13 +54,20 @@ void mdPlayer::input( SDL_Event *event )
 void mdPlayer::process(double delta)
 {
 	km = 0.7/(pe/0.000001);
-	if(kct) km = km/2-pe;
-	if(ksh) km = km*1.5+pe;
-	if(kalt) km = km*2+pe;
-	if(kup && y+phb*0.5 <= 0.99) y += delta*km;
-	if(kdown && y-phb*0.5>= -1) y -= delta*km;
-	if(kl && x-phb*0.5>=-1) x -= delta*km;
-	if(kr && x+phb*0.5 <=0.99) x += delta*km;
+	if(kct)
+		km = 0.7/2-pe;
+	if(ksh)
+		km = 0.7*1.5+pe;
+	if(kalt)
+		km = 0.7*2+pe;
+	if(kup && y+phb*0.5 <= 0.99)
+		y += delta*km;
+	if(kdown && y-phb*0.5>= -1)
+		y -= delta*km;
+	if(kl && x-phb*0.5>=-1)
+		x -= delta*km;
+	if(kr && x+phb*0.5 <=0.99)
+		x += delta*km;
 	if(modBullet.checkCollision(x,y,phb)) {
 		printf("hit\n");
 		--l;
@@ -69,7 +76,10 @@ void mdPlayer::process(double delta)
 		y = 0;
 		if(l <= 0) printf("death\n");
 	} 
-	if(modItem.checkCollision(x,y,pib*2)) score();
+	if(modItem.checkCollision(x,y,pib))
+		score();
+	if(modBullet.checkCollision(x,y,phb*4))
+		printf("grace %d \n", ++s);
 }
 
 void mdPlayer::draw()
