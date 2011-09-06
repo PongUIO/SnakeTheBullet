@@ -13,13 +13,13 @@ class mdItem modItem;
 void Item::process(double delta)
 {
 	if(modItem.ig) 
-		{y -= delta*g; printf("falling? %g \n", y);}
+		{y -= delta*g;}
 
 	if(y >= 1) 
 		kill();
 
 	if ((it -= delta) <= 0 && modItem.itb) 
-		{kill(); printf("time: %g \n", it);}
+		{kill(); }
 }
 
 Item::Item(double nx, double ny)
