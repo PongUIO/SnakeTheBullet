@@ -90,8 +90,27 @@ void FrameBuffer::init(int w, int h, double blurScale)
 	}
 	
 	GLenum status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
-	if( status != GL_FRAMEBUFFER_COMPLETE_EXT )
+	if( status != GL_FRAMEBUFFER_COMPLETE_EXT ) {
 		printf("Framebuffer error\n");
+		switch(status)
+		{
+			case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT_EXT:
+				printf("GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT\n");
+				break;
+				
+			case GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT:
+				printf("GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS\n");
+				break;
+				
+			case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT_EXT:
+				printf("GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT\n");
+				break;
+				
+			case GL_FRAMEBUFFER_UNSUPPORTED_EXT:
+				printf("GL_FRAMEBUFFER_UNSUPPORTED\n");
+				break;
+		}
+	}
 	
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
 	
